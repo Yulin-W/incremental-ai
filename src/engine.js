@@ -244,16 +244,17 @@ export class GameEngine {
 
   checkEraProgression() {
     const nextEra = ERAS.find(e => e.id === this.currentEraId + 1);
-    if (nextEra && this.totalInsightsEarned >= nextEra.unlockThreshold) {
-      // Check if player has at least unlocked 2 milestones of current era to encourage educational reading
-      const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.currentEraId);
-      const unlockedCount = currentEraMilestones.filter(m => this.unlockedMilestones.has(m.id)).length;
+    if (!nextEra) return;
 
-      // Era transition
-      if (unlockedCount >= Math.min(2, currentEraMilestones.length) || this.totalInsightsEarned >= nextEra.unlockThreshold * 2) {
-        this.currentEraId = nextEra.id;
-        this.emit('eraUnlock', nextEra);
-      }
+    // Era advances strictly when all milestones of the current era are discovered
+    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.currentEraId);
+    const allMilestonesUnlocked = currentEraMilestones.length > 0 && currentEraMilestones.every(m => this.unlockedMilestones.has(m.id));
+
+    if (allMilestonesUnlocked) {
+      this.currentEraId = nextEra.id;
+      this.emit('eraUnlock', nextEra);
+      // Recursively check in case subsequent era milestones were already satisfied
+      this.checkEraProgression();
     }
   }
 

@@ -61,6 +61,8 @@ export class GameUI {
       eraPillNumber: document.getElementById('era-pill-number'),
       eraPillName: document.getElementById('era-pill-name'),
       eraPillDates: document.getElementById('era-pill-dates'),
+      eraProgressBarFill: document.getElementById('era-progress-bar-fill'),
+      eraProgressText: document.getElementById('era-progress-text'),
       statInsights: document.getElementById('stat-insights'),
       statRate: document.getElementById('stat-rate'),
 
@@ -69,12 +71,11 @@ export class GameUI {
       clickGainBadge: document.getElementById('click-gain-badge'),
       bulkButtons: document.querySelectorAll('.btn-bulk'),
       generatorList: document.getElementById('generator-list'),
+      productionFooter: document.getElementById('production-footer'),
 
       // Center Panel (Timeline)
-      eraBannerTitle: document.getElementById('era-banner-title'),
-      eraBannerDates: document.getElementById('era-banner-dates'),
-      eraBannerFlavor: document.getElementById('era-banner-flavor'),
       milestoneGrid: document.getElementById('milestone-grid'),
+      timelineFooter: document.getElementById('timeline-footer'),
 
       // Right Panel (Codex)
       codexContainer: document.getElementById('codex-container'),
@@ -320,6 +321,25 @@ export class GameUI {
     this.dom.statInsights.innerText = GameUI.formatNumber(this.engine.insights);
     this.dom.statRate.innerText = `+${GameUI.formatNumber(this.engine.getTotalRate())} / s`;
     this.dom.clickGainBadge.innerText = `+${GameUI.formatNumber(this.engine.getClickPower())} / click`;
+
+    this.updateEraProgressBar();
+  }
+
+  updateEraProgressBar() {
+    if (!this.dom.eraProgressBarFill || !this.dom.eraProgressText) return;
+    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.engine.currentEraId);
+    const totalInEra = currentEraMilestones.length;
+    const unlockedInEra = currentEraMilestones.filter(m => this.engine.unlockedMilestones.has(m.id)).length;
+    const pct = totalInEra > 0 ? (unlockedInEra / totalInEra) * 100 : 100;
+    const nextEra = ERAS.find(e => e.id === this.engine.currentEraId + 1);
+
+    if (nextEra) {
+      this.dom.eraProgressBarFill.style.width = `${pct.toFixed(1)}%`;
+      this.dom.eraProgressText.innerText = `Era Discoveries: ${unlockedInEra} / ${totalInEra} (${pct.toFixed(0)}%)`;
+    } else {
+      this.dom.eraProgressBarFill.style.width = `100%`;
+      this.dom.eraProgressText.innerText = `✨ Frontier Horizon (All ${totalInEra}/${totalInEra} Discoveries)`;
+    }
   }
 
   renderGenerators() {
@@ -379,16 +399,43 @@ export class GameUI {
 
       this.dom.generatorList.appendChild(card);
     });
+
+    this.renderProductionFooter();
+  }
+
+  renderProductionFooter() {
+    if (!this.dom.productionFooter) return;
+    const nextEra = ERAS.find(e => e.id === this.engine.currentEraId + 1);
+    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.engine.currentEraId);
+    const totalInEra = currentEraMilestones.length;
+    const unlockedInEra = currentEraMilestones.filter(m => this.engine.unlockedMilestones.has(m.id)).length;
+
+    if (nextEra) {
+      this.dom.productionFooter.innerHTML = `
+        <div class="panel-footer-content">
+          <span class="footer-icon">🔒</span>
+          <div class="footer-text">
+            <div class="footer-title">More Research in Era ${nextEra.id}: ${nextEra.name}</div>
+            <div class="footer-desc">
+              Discover all ${totalInEra} historical milestones in the timeline (Progress: ${unlockedInEra}/${totalInEra}) to advance into the next era and reveal higher-tier compute.
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      this.dom.productionFooter.innerHTML = `
+        <div class="panel-footer-content">
+          <span class="footer-icon">✨</span>
+          <div class="footer-text">
+            <div class="footer-title">Frontier Compute Unlocked</div>
+            <div class="footer-desc">All historical computing apparatus and research tiers are available. Continue accelerating cognitive velocity!</div>
+          </div>
+        </div>
+      `;
+    }
   }
 
   renderTimeline() {
-    const currentEra = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
-    
-    // Era Banner
-    this.dom.eraBannerTitle.innerText = `${currentEra.name} (${currentEra.timeSpan})`;
-    this.dom.eraBannerDates.innerText = `Era ${currentEra.id} of 7`;
-    this.dom.eraBannerFlavor.innerText = currentEra.flavor;
-
     // Milestones List (Show all milestones up to currentEra + 1 to show what's ahead)
     const visibleMilestones = MILESTONES.filter(m => m.eraId <= this.engine.currentEraId + 1);
 
@@ -452,6 +499,40 @@ export class GameUI {
 
       this.dom.milestoneGrid.appendChild(card);
     });
+
+    this.renderTimelineFooter();
+  }
+
+  renderTimelineFooter() {
+    if (!this.dom.timelineFooter) return;
+    const nextEra = ERAS.find(e => e.id === this.engine.currentEraId + 1);
+    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.engine.currentEraId);
+    const totalInEra = currentEraMilestones.length;
+    const unlockedInEra = currentEraMilestones.filter(m => this.engine.unlockedMilestones.has(m.id)).length;
+
+    if (nextEra) {
+      this.dom.timelineFooter.innerHTML = `
+        <div class="panel-footer-content">
+          <span class="footer-icon">🏛️</span>
+          <div class="footer-text">
+            <div class="footer-title">Era Progression: ${unlockedInEra}/${totalInEra} Discoveries</div>
+            <div class="footer-desc">
+              Unlock all milestone breakthroughs in this epoch to advance the timeline into <strong>Era ${nextEra.id}: ${nextEra.name}</strong>.
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      this.dom.timelineFooter.innerHTML = `
+        <div class="panel-footer-content">
+          <span class="footer-icon">🌌</span>
+          <div class="footer-text">
+            <div class="footer-title">Frontier Era Discovered</div>
+            <div class="footer-desc">You have unlocked the autonomous frontier epoch. Research all remaining landmark discoveries to complete the codex.</div>
+          </div>
+        </div>
+      `;
+    }
   }
 
   renderCodex() {
@@ -461,37 +542,47 @@ export class GameUI {
 
     this.dom.codexContainer.innerHTML = `
       <div class="codex-detail">
-        <div class="codex-header-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="codex-year-badge">EPOCH ${ms.eraId} • ${ms.year}</span>
-            <span style="font-size:0.75rem; font-weight:700; color:${isUnlocked ? 'var(--success)' : 'var(--warning)'};">
-              ${isUnlocked ? '✓ UNLOCKED & ARCHIVED' : '⏳ THEORETICAL PREVIEW'}
+        <!-- Compact Header Card with Status Indicator -->
+        <div class="codex-header-card ${isUnlocked ? 'is-unlocked' : 'is-locked'}">
+          <div class="codex-header-top">
+            <span class="codex-epoch-tag">EPOCH ${ms.eraId} • ${ms.year}</span>
+            <span class="codex-status-pill ${isUnlocked ? 'pill-unlocked' : 'pill-locked'}">
+              ${isUnlocked ? '✓ Unlocked & Archived' : '🔒 Locked Entry'}
             </span>
           </div>
           <div class="codex-title">${ms.title}</div>
-          <div class="codex-figure">👤 Key Figure(s): ${ms.quoteOrFigure}</div>
+          <div class="codex-figure">👤 ${ms.quoteOrFigure}</div>
         </div>
 
+        <!-- Paradigm Shift -->
         <div class="codex-section">
-          <div class="codex-section-label">Paradigm Shift & Core Discovery</div>
+          <div class="codex-section-label">Paradigm Shift</div>
           <div class="paradigm-box">${ms.paradigmShift}</div>
         </div>
 
+        <!-- Educational Lore -->
         <div class="codex-section">
           <div class="codex-section-label">Historical Lore & Scientific Context</div>
           <div class="lore-body">${ms.educationalLore}</div>
         </div>
 
+        <!-- Primary Academic Citation -->
         <div class="codex-section">
           <div class="codex-section-label">Primary Academic Citation</div>
-          <div class="citation-card">📖 ${ms.citation}</div>
+          <div class="citation-card">
+            📖 ${ms.citation}
+          </div>
         </div>
 
+        <!-- Gameplay Economic Impact -->
         <div class="codex-section">
-          <div class="codex-section-label">In-Game Gameplay Bonus</div>
-          <div class="gameplay-impact-card">
-            <span>⚡</span>
-            <span>${ms.effects.description}</span>
+          <div class="codex-section-label">Gameplay Economic Impact</div>
+          <div class="gameplay-impact-card ${isUnlocked ? 'bonus-active' : 'bonus-inactive'}">
+            <span class="bonus-icon">${isUnlocked ? '⚡' : '⏳'}</span>
+            <div class="bonus-info">
+              <span class="bonus-title">${isUnlocked ? 'ACTIVE BONUS' : 'INACTIVE BONUS'}:</span>
+              <span class="bonus-desc">${ms.effects.description}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -507,6 +598,7 @@ export class GameUI {
     // Smooth header tick updates
     this.dom.statInsights.innerText = GameUI.formatNumber(this.engine.insights);
     this.dom.statRate.innerText = `+${GameUI.formatNumber(this.engine.getTotalRate())} / s`;
+    this.updateEraProgressBar();
     
     // Periodically update buy button affordabilities without full re-render
     const buyButtons = this.dom.generatorList.querySelectorAll('.btn-buy-gen');

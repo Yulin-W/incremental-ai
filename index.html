@@ -30,12 +30,20 @@
         </div>
       </div>
 
-      <!-- Current Era Progress Pill -->
-      <div class="era-status-badge" title="Current Historical Paradigm">
+      <!-- Current Era Progress Pill with Advance Indicator -->
+      <div class="era-status-badge" title="Current Historical Paradigm & Era Progression">
         <span id="era-pill-number" class="era-pill-number">Era 1</span>
-        <div>
-          <div id="era-pill-name" class="era-pill-name">Antiquity & Mechanical Automata</div>
-          <div id="era-pill-dates" class="era-pill-dates">Prehistory – 1500s</div>
+        <div class="era-badge-info">
+          <div class="era-badge-top-row">
+            <span id="era-pill-name" class="era-pill-name">Antiquity & Mechanical Automata</span>
+            <span id="era-pill-dates" class="era-pill-dates">Prehistory – 1500s</span>
+          </div>
+          <div class="era-progress-row">
+            <div class="era-progress-bar-bg" title="Historical milestone discoveries progress toward next Era">
+              <div id="era-progress-bar-fill" class="era-progress-bar-fill" style="width: 0%;"></div>
+            </div>
+            <span id="era-progress-text" class="era-progress-text">Era Discoveries: 0 / 4 (0%)</span>
+          </div>
         </div>
       </div>
 
@@ -68,7 +76,8 @@
       <div class="panel-header">
         <h2 class="panel-title"><span>⚡</span> Research & Compute</h2>
       </div>
-      <div class="panel-content">
+      <!-- Persistent Action & Controls Header -->
+      <div class="production-sticky-header">
         <!-- Manual Contemplation Hero -->
         <div class="contemplate-hero">
           <button id="btn-contemplate" class="btn-contemplate" aria-label="Contemplate / Derive Logic">
@@ -87,11 +96,17 @@
             <button class="btn-bulk" data-mode="max">MAX</button>
           </div>
         </div>
+      </div>
 
+      <div class="panel-content">
         <!-- Dynamic Generators List -->
         <div id="generator-list" class="generator-list">
           <!-- Populated dynamically by ui.js -->
         </div>
+      </div>
+      <!-- Panel Unlock Guidance Footer -->
+      <div id="production-footer" class="panel-footer">
+        <!-- Populated dynamically by ui.js -->
       </div>
     </aside>
 
@@ -101,23 +116,14 @@
         <h2 class="panel-title"><span>⏳</span> Historical Timeline</h2>
       </div>
       <div class="panel-content">
-        <!-- Current Era Banner -->
-        <div class="era-banner">
-          <div class="era-banner-header">
-            <h3 id="era-banner-title" class="era-banner-title">Antiquity & Mechanical Automata</h3>
-            <span id="era-banner-dates" class="era-banner-dates">Era 1 of 7</span>
-          </div>
-          <p id="era-banner-flavor" class="era-banner-flavor">
-            In ancient academies and workshops, thinkers dream of mechanical beings and formalise the first laws of syllogistic deduction.
-          </p>
-        </div>
-
-        <div class="timeline-section-header">Milestones & Paradigm Shifts</div>
-
         <!-- Dynamic Milestones Grid -->
         <div id="milestone-grid" class="milestone-grid">
           <!-- Populated dynamically by ui.js -->
         </div>
+      </div>
+      <!-- Panel Unlock Guidance Footer -->
+      <div id="timeline-footer" class="panel-footer">
+        <!-- Populated dynamically by ui.js -->
       </div>
     </section>
 

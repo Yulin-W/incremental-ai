@@ -1,19 +1,17 @@
 # 🧠 Incremental AI — The History of Artificial Intelligence
 
-An interactive, educational incremental/idle web game that guides players through the **evolution of Artificial Intelligence**—from ancient mechanical automata and formal syllogisms to modern foundation models and autonomous reasoning agents.
+An interactive educational idle/incremental game guiding players through the **evolution of Artificial Intelligence**—from ancient mechanical automata and formal syllogisms to modern foundation models and autonomous reasoning agents.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)]()
-[![GitHub Pages](https://img.shields.io/badge/deployed%20on-GitHub%20Pages-blue.svg)]()
+👉 **[Play Incremental AI Online](https://yulin-w.github.io/incremental-ai/)**
 
 ---
 
 ## 🎯 Educational Objective
 
-*Incremental AI* makes the history of computer science and artificial intelligence tangible and intuitive:
-- **Understand Paradigm Shifts**: Discover *why* the field moved from deductive, top-down rule systems (GOFAI & Expert Systems) to inductive, data-driven statistical learning and self-attention.
-- **Learn the True Science**: Unravel the mathematical, biological, and philosophical milestones authored by pioneers like Aristotle, Ramon Llull, Blaise Pascal, Gottfried Wilhelm Leibniz, Ada Lovelace, Charles Babbage, Alan Turing, Warren McCulloch, Walter Pitts, John McCarthy, Geoffrey Hinton, and modern frontier researchers.
-- **Explore The Codex**: Click any milestone to read plain-language educational summaries, key figures, and original academic citations.
+*Incremental AI* makes the history of computer science and artificial intelligence intuitive and engaging:
+- **Understand Paradigm Shifts**: Discover *why* the field transitioned from deductive, top-down rule systems (GOFAI & Expert Systems) to inductive, data-driven statistical learning and self-attention.
+- **Learn the True Science**: Unravel the mathematical, biological, and philosophical milestones authored by pioneers like Aristotle, Ramon Llull, Blaise Pascal, Gottfried Wilhelm Leibniz, Ada Lovelace, Charles Babbage, Alan Turing, Warren McCulloch, Walter Pitts, John McCarthy, Geoffrey Hinton, and modern researchers.
+- **Explore The Codex**: Click any milestone to read plain-language educational summaries, historical figures, and original academic citations.
 
 ---
 
@@ -31,45 +29,12 @@ An interactive, educational incremental/idle web game that guides players throug
 
 ---
 
-## 🕹️ Gameplay Mechanics
+## 🕹️ How to Play
 
-- **Contemplate / Derive Logic**: Click the active thought button to generate **Insights** ($\mathcal{I}$).
-- **Construct Generators**: Invest Insights into historical research tools (e.g. Scribes, Difference Engines, Vacuum Tubes, GPU Rigs, Tensor Clusters).
-- **Unlock Breakthroughs**: Purchase landmark historical milestones that unlock higher generator tiers, grant exponential multipliers, and reveal entries in **The Codex**.
-- **Advance Historical Eras**: Reach epoch insight thresholds to trigger paradigm transitions with dynamic aesthetic shifts.
-
----
-
-## 🚀 Local Setup & Development
-
-This project is built with **zero build steps** using native HTML5, modern CSS, and vanilla ES modules.
-
-### Option 1: VS Code Live Server
-1. Open the `incremental-ai/` folder in Visual Studio Code.
-2. Click **Go Live** via the Live Server extension.
-
-### Option 2: Python Static Server
-```bash
-cd incremental-ai
-python -m http.server 8000
-```
-Open [http://localhost:8000](http://localhost:8000) in your browser.
-
-### Option 3: Node.js (npx)
-```bash
-cd incremental-ai
-npx serve
-```
-
----
-
-## 🌐 GitHub Pages Deployment
-
-1. Push this repository to your GitHub account (`username/incremental-ai`).
-2. Navigate to **Settings** > **Pages**.
-3. Under **Build and deployment** > **Source**, select `Deploy from a branch`.
-4. Choose `main` (or `master`) branch and root `/` folder, then click **Save**.
-5. Your game will be live within seconds at `https://<username>.github.io/incremental-ai/`.
+- **Contemplate & Derive Logic**: Click the active thought button to generate **Insights** ($\mathcal{I}$).
+- **Invest in Research**: Purchase historical research tools (such as Scholastic Scribes, Difference Engines, Vacuum Tubes, GPU Rigs, and Tensor Clusters) to automate passive generation.
+- **Discover Breakthroughs**: Unlock landmark historical milestones that grant powerful multipliers, reveal higher generator tiers, and unlock entries in **The Knowledge Codex**.
+- **Advance Historical Eras**: Reach epoch insight thresholds to trigger paradigm transitions and experience the evolving visual themes across history.
 
 ---
 
@@ -80,4 +45,4 @@ All historical milestones, paper references, and scientific concepts in this edu
 ---
 
 ## 📄 License
-MIT License. Open for educational, academic, and non-commercial learning.
+MIT License. Open for educational and non-commercial learning.

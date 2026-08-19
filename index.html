@@ -26,7 +26,7 @@
             <h1 class="brand-title">Incremental AI</h1>
             <span class="version-tag"></span>
           </div>
-          <p class="brand-subtitle">The Chronological Evolution of Synthetic Thought</p>
+          <p class="brand-subtitle">The History of Artificial Intelligence</p>
         </div>
       </div>
 
@@ -42,7 +42,7 @@
             <div class="era-progress-bar-bg" title="Historical milestone discoveries progress toward next Era">
               <div id="era-progress-bar-fill" class="era-progress-bar-fill" style="width: 0%;"></div>
             </div>
-            <span id="era-progress-text" class="era-progress-text">Era Discoveries: 0 / 4 (0%)</span>
+            <span id="era-progress-text" class="era-progress-text">0 / 4 Milestones</span>
           </div>
         </div>
       </div>
@@ -50,11 +50,11 @@
       <!-- Resource Economy Counter -->
       <div class="resource-stats">
         <div class="stat-group">
-          <span class="stat-label">Insights Accumulation</span>
+          <span class="stat-label">💡 Insights</span>
           <span id="stat-insights" class="stat-value-insights">0</span>
         </div>
         <div class="stat-group">
-          <span class="stat-label">Cognitive Velocity</span>
+          <span class="stat-label">per second</span>
           <span id="stat-rate" class="stat-value-rate">+0.0 / s</span>
         </div>
       </div>
@@ -63,8 +63,8 @@
 
   <!-- Mobile Viewport Navigation Tab Bar -->
   <nav class="mobile-tab-bar" aria-label="Mobile Navigation">
-    <button class="btn-tab" data-tab="production">⚙️ Production</button>
-    <button class="btn-tab active" data-tab="timeline">⏳ Timeline</button>
+    <button class="btn-tab active" data-tab="production">⚡ Production</button>
+    <button class="btn-tab" data-tab="timeline">⏳ Timeline</button>
     <button class="btn-tab" data-tab="codex">📖 Codex</button>
   </nav>
 
@@ -72,24 +72,24 @@
   <main class="app-main">
 
     <!-- LEFT PANEL: Production & Research Automation -->
-    <aside id="panel-production" class="panel-container" aria-label="Production Hub">
+    <aside id="panel-production" class="panel-container active-mobile-panel" aria-label="Production Hub">
       <div class="panel-header">
-        <h2 class="panel-title"><span>⚡</span> Research & Compute</h2>
+        <h2 class="panel-title"><span>⚡</span> Production</h2>
       </div>
       <!-- Persistent Action & Controls Header -->
       <div class="production-sticky-header">
-        <!-- Manual Contemplation Hero -->
+        <!-- Manual Thinking Hero -->
         <div class="contemplate-hero">
-          <button id="btn-contemplate" class="btn-contemplate" aria-label="Contemplate / Derive Logic">
+          <button id="btn-contemplate" class="btn-contemplate" aria-label="Think">
             <span>💡</span>
-            <span>Contemplate & Derive</span>
+            <span>Think</span>
           </button>
           <span id="click-gain-badge" class="click-gain-badge">+1.0 / click</span>
         </div>
 
         <!-- Bulk Purchase Control -->
         <div class="bulk-buy-bar">
-          <span class="bulk-label">Investment Scale:</span>
+          <span class="bulk-label">Buy:</span>
           <div class="bulk-buttons">
             <button class="btn-bulk active" data-mode="1">x1</button>
             <button class="btn-bulk" data-mode="10">x10</button>
@@ -104,16 +104,12 @@
           <!-- Populated dynamically by ui.js -->
         </div>
       </div>
-      <!-- Panel Unlock Guidance Footer -->
-      <div id="production-footer" class="panel-footer">
-        <!-- Populated dynamically by ui.js -->
-      </div>
     </aside>
 
     <!-- CENTER PANEL: Historical Paradigm Timeline -->
-    <section id="panel-timeline" class="panel-container active-mobile-panel" aria-label="Timeline Progression">
+    <section id="panel-timeline" class="panel-container" aria-label="Timeline Progression">
       <div class="panel-header">
-        <h2 class="panel-title"><span>⏳</span> Historical Timeline</h2>
+        <h2 class="panel-title"><span>⏳</span> Timeline</h2>
       </div>
       <div class="panel-content">
         <!-- Dynamic Milestones Grid -->
@@ -121,16 +117,12 @@
           <!-- Populated dynamically by ui.js -->
         </div>
       </div>
-      <!-- Panel Unlock Guidance Footer -->
-      <div id="timeline-footer" class="panel-footer">
-        <!-- Populated dynamically by ui.js -->
-      </div>
     </section>
 
     <!-- RIGHT PANEL: The Knowledge Codex -->
     <aside id="panel-codex" class="panel-container" aria-label="Knowledge Codex">
       <div class="panel-header">
-        <h2 class="panel-title"><span>📖</span> The Knowledge Codex</h2>
+        <h2 class="panel-title"><span>📖</span> Knowledge Codex</h2>
       </div>
       <div class="panel-content">
         <div id="codex-container">

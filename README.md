@@ -31,10 +31,10 @@ An interactive educational idle/incremental game guiding players through the **e
 
 ## 🕹️ How to Play
 
-- **Contemplate & Derive Logic**: Click the active thought button to generate **Insights** ($\mathcal{I}$).
+- **Think**: Click the active thought button (💡) to generate **Insights** ($\mathcal{I}$).
 - **Invest in Research**: Purchase historical research tools (such as Scholastic Scribes, Difference Engines, Vacuum Tubes, GPU Rigs, and Tensor Clusters) to automate passive generation.
 - **Discover Breakthroughs**: Unlock landmark historical milestones that grant powerful multipliers, reveal higher generator tiers, and unlock entries in **The Knowledge Codex**.
-- **Advance Historical Eras**: Reach epoch insight thresholds to trigger paradigm transitions and experience the evolving visual themes across history.
+- **Advance Historical Eras**: Discover all milestone breakthroughs in an era to advance the timeline into the next epoch.
 
 ---
 

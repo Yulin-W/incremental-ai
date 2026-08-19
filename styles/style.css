@@ -595,13 +595,20 @@ body {
 }
 
 .gen-icon {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
 }
 
 .gen-name {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-main);
+}
+
+.gen-flavor {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+  margin-top: 0.15rem;
 }
 
 .gen-owned {
@@ -616,10 +623,20 @@ body {
 
 .gen-stats-row {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 0.76rem;
   font-family: var(--font-mono);
+}
+
+.gen-output-rate {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.gen-base-rate {
+  color: var(--text-dim);
+  font-size: 0.72rem;
 }
 
 .btn-buy-gen {
@@ -627,7 +644,7 @@ body {
   background: var(--bg-primary);
   border: 1px solid var(--accent-primary);
   color: var(--accent-primary);
-  padding: 0.55rem;
+  padding: 0.5rem 0.75rem;
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
   font-weight: 700;
@@ -665,10 +682,10 @@ body {
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 0.9rem;
+  padding: 0.95rem 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.65rem;
   transition: all var(--transition-fast);
   position: relative;
   cursor: pointer;
@@ -693,7 +710,7 @@ body {
 }
 
 .milestone-card.locked {
-  opacity: 0.5;
+  opacity: 0.55;
   border-left: 4px solid var(--text-dim);
 }
 
@@ -707,7 +724,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .ms-title-group {
@@ -721,7 +738,7 @@ body {
   font-family: var(--font-mono);
   font-weight: 700;
   background: rgba(255, 255, 255, 0.08);
-  padding: 0.15rem 0.4rem;
+  padding: 0.15rem 0.45rem;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
 }
@@ -732,59 +749,44 @@ body {
   color: var(--text-main);
 }
 
-.ms-status-badge {
-  font-size: 0.75rem;
+.ms-state-btn {
+  font-size: 0.74rem;
   font-weight: 700;
-  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
+  white-space: nowrap;
 }
 
 .status-unlocked {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.18);
   color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
 .status-available {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(99, 102, 241, 0.18);
   color: var(--accent-primary);
 }
 
 .status-locked {
-  background: rgba(100, 116, 139, 0.2);
+  background: rgba(100, 116, 139, 0.15);
   color: var(--text-dim);
-}
-
-.ms-summary {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  line-height: 1.35;
-}
-
-.ms-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
-}
-
-.ms-effect-preview {
-  font-size: 0.75rem;
-  color: var(--accent-secondary);
-  font-weight: 600;
+  border: 1px solid rgba(100, 116, 139, 0.25);
 }
 
 .btn-unlock-ms {
   background: var(--accent-primary);
   color: #000;
   border: none;
-  padding: 0.35rem 0.85rem;
+  padding: 0.3rem 0.8rem;
   border-radius: var(--radius-sm);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   font-family: var(--font-mono);
   cursor: pointer;
-  transition: transform var(--transition-fast);
+  white-space: nowrap;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
 .btn-unlock-ms:hover:not(:disabled) {
@@ -797,6 +799,23 @@ body {
   color: var(--text-dim);
   border: 1px solid var(--border-color);
   cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.ms-flavor {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.ms-effect-preview {
+  font-size: 0.76rem;
+  color: var(--accent-secondary);
+  font-weight: 600;
+  background: rgba(168, 85, 247, 0.08);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--accent-secondary);
 }
 
 /* ==========================================================================

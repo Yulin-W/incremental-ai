@@ -290,7 +290,7 @@ export const MILESTONES = [
     citation: "Apollonius Rhodius, Argonautica (3rd Century BCE)",
     effects: {
       clickMultiplier: 2.0,
-      description: "Doubles active contemplation insight yield."
+      description: "Doubles active Think insight yield."
     }
   },
   {
@@ -457,7 +457,7 @@ export const MILESTONES = [
     citation: "Turing, A. M. (1950). Computing Machinery and Intelligence. Mind, 59(236), 433-460.",
     effects: {
       clickMultiplier: 3.0,
-      description: "Triples active contemplation Insight yield."
+      description: "Triples active Think Insight yield."
     }
   },
   {
@@ -507,7 +507,7 @@ export const MILESTONES = [
     citation: "Weizenbaum, J. (1966). ELIZA—A Computer Program For the Study of Natural Language Communication Between Man and Machine.",
     effects: {
       clickMultiplier: 2.5,
-      description: "Active contemplation yield increased by +150%."
+      description: "Active Think yield increased by +150%."
     }
   },
   {
@@ -590,7 +590,7 @@ export const MILESTONES = [
     citation: "Campbell, M., Hoane, A. J., & Hsu, F. H. (2002). Deep Blue. Artificial Intelligence, 134(1-2), 57-83.",
     effects: {
       clickMultiplier: 3.0,
-      description: "Triples active contemplation click power."
+      description: "Triples active Think click power."
     }
   },
   {
@@ -640,7 +640,7 @@ export const MILESTONES = [
     citation: "Mnih, V. et al. (2015). Human-level control through deep reinforcement learning. Nature, 518(7540), 529-533.",
     effects: {
       clickMultiplier: 3.5,
-      description: "Active contemplation yield increased by +250%."
+      description: "Active Think yield increased by +250%."
     }
   },
   {
@@ -691,7 +691,7 @@ export const MILESTONES = [
     citation: "Ouyang, L. et al. (2022). Training language models to follow instructions with human feedback. NeurIPS.",
     effects: {
       clickMultiplier: 4.0,
-      description: "Active contemplation yield multiplied by 4x."
+      description: "Active Think yield multiplied by 4x."
     }
   },
   {

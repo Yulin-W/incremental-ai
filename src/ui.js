@@ -9,7 +9,7 @@ import { ERAS, GENERATORS, MILESTONES } from './historyData.js';
 export class GameUI {
   constructor() {
     this.engine = new GameEngine();
-    this.activeMobileTab = 'timeline'; // 'production', 'timeline', 'codex'
+    this.activeMobileTab = 'production'; // 'production', 'timeline', 'codex'
     this.dom = {};
 
     this.initDOMReferences();
@@ -71,11 +71,9 @@ export class GameUI {
       clickGainBadge: document.getElementById('click-gain-badge'),
       bulkButtons: document.querySelectorAll('.btn-bulk'),
       generatorList: document.getElementById('generator-list'),
-      productionFooter: document.getElementById('production-footer'),
 
       // Center Panel (Timeline)
       milestoneGrid: document.getElementById('milestone-grid'),
-      timelineFooter: document.getElementById('timeline-footer'),
 
       // Right Panel (Codex)
       codexContainer: document.getElementById('codex-container'),
@@ -190,10 +188,10 @@ export class GameUI {
   // EVENT BINDINGS
   // ==========================================
   bindEvents() {
-    // Contemplate Button Click
+    // Think Button Click
     this.dom.btnContemplate.addEventListener('click', (e) => {
       const gain = this.engine.clickInsight();
-      this.spawnClickParticle(e, `+${GameUI.formatNumber(gain)}`);
+      this.spawnClickParticle(e, `+${GameUI.formatNumber(gain)} 💡`);
     });
 
     // Bulk Buy Mode Buttons
@@ -335,10 +333,10 @@ export class GameUI {
 
     if (nextEra) {
       this.dom.eraProgressBarFill.style.width = `${pct.toFixed(1)}%`;
-      this.dom.eraProgressText.innerText = `Era Discoveries: ${unlockedInEra} / ${totalInEra} (${pct.toFixed(0)}%)`;
+      this.dom.eraProgressText.innerText = `${unlockedInEra} / ${totalInEra} Milestones (${pct.toFixed(0)}%)`;
     } else {
       this.dom.eraProgressBarFill.style.width = `100%`;
-      this.dom.eraProgressText.innerText = `✨ Frontier Horizon (All ${totalInEra}/${totalInEra} Discoveries)`;
+      this.dom.eraProgressText.innerText = `All ${totalInEra}/${totalInEra} Milestones Complete`;
     }
   }
 
@@ -377,17 +375,17 @@ export class GameUI {
             <span class="gen-icon">${gen.icon}</span>
             <div>
               <div class="gen-name">${gen.name}</div>
-              <div style="font-size:0.72rem; color:var(--text-muted);">${gen.description}</div>
+              <div class="gen-flavor">${gen.description}</div>
             </div>
           </div>
           <div class="gen-owned">${count}</div>
         </div>
         <div class="gen-stats-row">
-          <span>Output: +${GameUI.formatNumber(rate)}/s</span>
-          <span>Base: +${gen.baseRate}/s</span>
+          <span class="gen-output-rate">+${GameUI.formatNumber(rate)}/s</span>
+          <span class="gen-base-rate">+${gen.baseRate}/s each</span>
         </div>
         <button class="btn-buy-gen" ${!canAfford ? 'disabled' : ''}>
-          <span>Invest in Research</span>
+          <span>Buy x${buyCount}</span>
           <span>${costText} 💡</span>
         </button>
       `;
@@ -399,40 +397,6 @@ export class GameUI {
 
       this.dom.generatorList.appendChild(card);
     });
-
-    this.renderProductionFooter();
-  }
-
-  renderProductionFooter() {
-    if (!this.dom.productionFooter) return;
-    const nextEra = ERAS.find(e => e.id === this.engine.currentEraId + 1);
-    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.engine.currentEraId);
-    const totalInEra = currentEraMilestones.length;
-    const unlockedInEra = currentEraMilestones.filter(m => this.engine.unlockedMilestones.has(m.id)).length;
-
-    if (nextEra) {
-      this.dom.productionFooter.innerHTML = `
-        <div class="panel-footer-content">
-          <span class="footer-icon">🔒</span>
-          <div class="footer-text">
-            <div class="footer-title">More Research in Era ${nextEra.id}: ${nextEra.name}</div>
-            <div class="footer-desc">
-              Discover all ${totalInEra} historical milestones in the timeline (Progress: ${unlockedInEra}/${totalInEra}) to advance into the next era and reveal higher-tier compute.
-            </div>
-          </div>
-        </div>
-      `;
-    } else {
-      this.dom.productionFooter.innerHTML = `
-        <div class="panel-footer-content">
-          <span class="footer-icon">✨</span>
-          <div class="footer-text">
-            <div class="footer-title">Frontier Compute Unlocked</div>
-            <div class="footer-desc">All historical computing apparatus and research tiers are available. Continue accelerating cognitive velocity!</div>
-          </div>
-        </div>
-      `;
-    }
   }
 
   renderTimeline() {
@@ -448,14 +412,14 @@ export class GameUI {
       const canAfford = this.engine.insights >= ms.cost;
 
       let statusClass = 'locked';
-      let statusBadge = '<span class="ms-status-badge status-locked">🔒 Locked</span>';
+      let actionControl = '<span class="ms-state-btn status-locked">🔒 Locked</span>';
 
       if (isUnlocked) {
         statusClass = 'unlocked';
-        statusBadge = '<span class="ms-status-badge status-unlocked">✓ Discovered</span>';
+        actionControl = '<span class="ms-state-btn status-unlocked">✓ Discovered</span>';
       } else if (isAvailable) {
         statusClass = 'available';
-        statusBadge = '<span class="ms-status-badge status-available">⚡ Ready to Unlock</span>';
+        actionControl = `<button class="btn-unlock-ms" ${!canAfford ? 'disabled' : ''}>Unlock: ${GameUI.formatNumber(ms.cost)} 💡</button>`;
       }
 
       const card = document.createElement('div');
@@ -466,19 +430,10 @@ export class GameUI {
             <span class="ms-year">${ms.year}</span>
             <span class="ms-title">${ms.title}</span>
           </div>
-          ${statusBadge}
+          ${actionControl}
         </div>
-        <div class="ms-summary">${ms.paradigmShift}</div>
-        <div class="ms-actions">
-          <span class="ms-effect-preview">${ms.effects.description}</span>
-          ${
-            !isUnlocked && isAvailable
-              ? `<button class="btn-unlock-ms" ${!canAfford ? 'disabled' : ''}>Unlock: ${GameUI.formatNumber(ms.cost)} 💡</button>`
-              : isUnlocked
-              ? `<span style="font-size:0.75rem; color:var(--success); font-weight:700;">Recorded in Codex</span>`
-              : `<span style="font-size:0.72rem; color:var(--text-dim);">Prerequisites required</span>`
-          }
-        </div>
+        <div class="ms-flavor">${ms.paradigmShift}</div>
+        <div class="ms-effect-preview">⚡ ${ms.effects.description}</div>
       `;
 
       // Select for Codex viewing
@@ -499,40 +454,6 @@ export class GameUI {
 
       this.dom.milestoneGrid.appendChild(card);
     });
-
-    this.renderTimelineFooter();
-  }
-
-  renderTimelineFooter() {
-    if (!this.dom.timelineFooter) return;
-    const nextEra = ERAS.find(e => e.id === this.engine.currentEraId + 1);
-    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.engine.currentEraId);
-    const totalInEra = currentEraMilestones.length;
-    const unlockedInEra = currentEraMilestones.filter(m => this.engine.unlockedMilestones.has(m.id)).length;
-
-    if (nextEra) {
-      this.dom.timelineFooter.innerHTML = `
-        <div class="panel-footer-content">
-          <span class="footer-icon">🏛️</span>
-          <div class="footer-text">
-            <div class="footer-title">Era Progression: ${unlockedInEra}/${totalInEra} Discoveries</div>
-            <div class="footer-desc">
-              Unlock all milestone breakthroughs in this epoch to advance the timeline into <strong>Era ${nextEra.id}: ${nextEra.name}</strong>.
-            </div>
-          </div>
-        </div>
-      `;
-    } else {
-      this.dom.timelineFooter.innerHTML = `
-        <div class="panel-footer-content">
-          <span class="footer-icon">🌌</span>
-          <div class="footer-text">
-            <div class="footer-title">Frontier Era Discovered</div>
-            <div class="footer-desc">You have unlocked the autonomous frontier epoch. Research all remaining landmark discoveries to complete the codex.</div>
-          </div>
-        </div>
-      `;
-    }
   }
 
   renderCodex() {

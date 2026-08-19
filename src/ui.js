@@ -34,14 +34,26 @@ export class GameUI {
       this.initDebugHUD();
     }
 
+    // Attempt to load persisted save state
+    const hasLoadedSave = this.engine.loadFromStorage();
+    if (hasLoadedSave) {
+      const currentEra = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
+      this.updateTheme(currentEra.themeClass);
+    }
+
     // Initial Render
     this.renderAll();
     
-    // Auto-display Help & How-to-Play Modal on game load (strictly app opening trigger)
-    this.openHelpModal();
+    // Auto-display Help & How-to-Play Modal on game load strictly for new players
+    if (!hasLoadedSave || (this.engine.insights === 0 && this.engine.unlockedMilestones.size === 0 && !this.engine.hasEverUnlockedSingularity)) {
+      this.openHelpModal();
+    }
 
     // Trigger initial epoch activation (strictly an epoch change/activation trigger)
     this.engine.initStartingEra();
+
+    // Auto-save interval tracking
+    this.lastAutoSaveTime = performance.now();
 
     // Start Animation / Game Loop
     requestAnimationFrame((ts) => this.gameLoop(ts));
@@ -133,13 +145,21 @@ export class GameUI {
       paradigmVanillaSlot: document.getElementById('paradigm-vanilla-slot'),
       btnStayTimeline: document.getElementById('btn-stay-timeline'),
       btnCloseParadigm: document.getElementById('btn-close-paradigm'),
+      btnRequestPurge: document.getElementById('btn-request-purge'),
 
       // Paradigm Shift Confirmation Modal Dialog (v1.7.0)
       paradigmConfirmModal: document.getElementById('paradigm-confirm-modal'),
+      confirmModalBadge: document.getElementById('confirm-modal-badge'),
       confirmParadigmIcon: document.getElementById('confirm-paradigm-icon'),
       confirmParadigmTitle: document.getElementById('confirm-paradigm-title'),
       confirmParadigmDesc: document.getElementById('confirm-paradigm-desc'),
+      confirmEffectsHeader: document.getElementById('confirm-effects-header'),
       confirmParadigmEffectsText: document.getElementById('confirm-paradigm-effects-text'),
+      confirmWarningBox: document.getElementById('confirm-warning-box'),
+      confirmWarningIcon: document.getElementById('confirm-warning-icon'),
+      confirmWarningText: document.getElementById('confirm-warning-text'),
+      confirmPurgeOptionContainer: document.getElementById('confirm-purge-option-container'),
+      btnPurgeFromSimple: document.getElementById('btn-purge-from-simple'),
       btnCancelConfirm: document.getElementById('btn-cancel-confirm'),
       btnExecuteShift: document.getElementById('btn-execute-shift'),
       btnCloseConfirm: document.getElementById('btn-close-confirm'),
@@ -325,6 +345,12 @@ export class GameUI {
         this.showToast('🌌 Continuing Current Timeline', 'Explore further or inspect the Codex. Paradigm Shift remains available in the header.', '📜');
       });
     }
+    if (this.dom.btnRequestPurge) {
+      this.dom.btnRequestPurge.addEventListener('click', () => this.requestPurgeData());
+    }
+    if (this.dom.btnPurgeFromSimple) {
+      this.dom.btnPurgeFromSimple.addEventListener('click', () => this.requestPurgeData());
+    }
     if (this.dom.paradigmModal) {
       this.dom.paradigmModal.addEventListener('click', (e) => {
         if (e.target === this.dom.paradigmModal) {
@@ -350,6 +376,17 @@ export class GameUI {
         }
       });
     }
+
+    // Window Lifecycle Persistence Hooks
+    window.addEventListener('beforeunload', () => {
+      this.engine.saveToStorage();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        this.engine.saveToStorage();
+      }
+    });
 
     // Global Keydown Handler for Modals
     window.addEventListener('keydown', (e) => {
@@ -489,6 +526,24 @@ export class GameUI {
   requestParadigmShift(paradigmId) {
     this.pendingParadigmChoice = paradigmId;
     
+    if (this.dom.confirmModalBadge) {
+      this.dom.confirmModalBadge.textContent = '⚠️ CONFIRM PARADIGM SHIFT';
+    }
+    if (this.dom.confirmEffectsHeader) {
+      this.dom.confirmEffectsHeader.textContent = '⚡ ACTIVE BUFFS FOR NEXT RUN:';
+    }
+    if (this.dom.confirmWarningIcon) this.dom.confirmWarningIcon.textContent = 'ℹ️';
+    if (this.dom.confirmWarningText) {
+      this.dom.confirmWarningText.textContent = 'Current insights, generators, and milestone discoveries will reset to Epoch 1.';
+    }
+    if (this.dom.confirmPurgeOptionContainer) {
+      this.dom.confirmPurgeOptionContainer.style.display = 'none';
+    }
+    if (this.dom.btnExecuteShift) {
+      this.dom.btnExecuteShift.classList.remove('btn-danger-purge');
+      this.dom.btnExecuteShift.innerHTML = '<span>🚀 Confirm & Reincarnate →</span>';
+    }
+
     if (paradigmId && paradigmId !== 'paradigm_none') {
       const p = PARADIGMS.find(item => item.id === paradigmId);
       if (p) {
@@ -517,13 +572,69 @@ export class GameUI {
   requestSimpleRestart() {
     this.pendingParadigmChoice = 'simple_restart';
 
+    if (this.dom.confirmModalBadge) {
+      this.dom.confirmModalBadge.textContent = '🔄 RESTART TIMELINE';
+    }
     if (this.dom.confirmParadigmIcon) this.dom.confirmParadigmIcon.textContent = '🔄';
     if (this.dom.confirmParadigmTitle) this.dom.confirmParadigmTitle.textContent = 'Restart Timeline from Epoch 1?';
     if (this.dom.confirmParadigmDesc) {
       this.dom.confirmParadigmDesc.textContent = 'This will reset your current insights, historical automation, and milestone discoveries back to Epoch 1: Antiquity.';
     }
+    if (this.dom.confirmEffectsHeader) {
+      this.dom.confirmEffectsHeader.textContent = '💡 SINGULARITY PROGRESSION:';
+    }
     if (this.dom.confirmParadigmEffectsText) {
-      this.dom.confirmParadigmEffectsText.innerHTML = `<strong>💡 Endgame Motivator:</strong> Complete all 7 Epochs once to achieve the Technological Singularity. Clearing the game permanently upgrades this Restart button into the <em>Paradigm Shift</em> — unlocking specialized AI research doctrines with ~2x speed boosts!`;
+      this.dom.confirmParadigmEffectsText.innerHTML = `Complete all 7 Epochs once to achieve the Technological Singularity. Clearing the game permanently upgrades this button into <strong>AI Paradigm Shifts</strong> with ~2x speed boosts!`;
+    }
+    if (this.dom.confirmWarningIcon) this.dom.confirmWarningIcon.textContent = 'ℹ️';
+    if (this.dom.confirmWarningText) {
+      this.dom.confirmWarningText.textContent = 'Active run progress will restart, but any unlocked meta achievements are preserved.';
+    }
+    if (this.dom.confirmPurgeOptionContainer) {
+      this.dom.confirmPurgeOptionContainer.style.display = 'flex';
+    }
+    if (this.dom.btnExecuteShift) {
+      this.dom.btnExecuteShift.classList.remove('btn-danger-purge');
+      this.dom.btnExecuteShift.innerHTML = '<span>🔄 Confirm & Restart →</span>';
+    }
+
+    if (this.dom.paradigmConfirmModal) {
+      this.isParadigmConfirmOpen = true;
+      this.dom.paradigmConfirmModal.style.display = 'flex';
+      void this.dom.paradigmConfirmModal.offsetHeight;
+      this.dom.paradigmConfirmModal.classList.add('active');
+      this.dom.paradigmConfirmModal.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  // Full Hard Reset & Memory Purge Flow
+  requestPurgeData() {
+    this.pendingParadigmChoice = 'purge_all_data';
+
+    if (this.dom.confirmModalBadge) {
+      this.dom.confirmModalBadge.textContent = '⚠️ HARD RESET & PURGE';
+    }
+    if (this.dom.confirmParadigmIcon) this.dom.confirmParadigmIcon.textContent = '🧹';
+    if (this.dom.confirmParadigmTitle) this.dom.confirmParadigmTitle.textContent = 'Permanently Erase All Saved Data?';
+    if (this.dom.confirmParadigmDesc) {
+      this.dom.confirmParadigmDesc.textContent = 'This will wipe all local storage data from your browser, removing all unlocked paradigms, lifetime insights, and progress back to Day 1.';
+    }
+    if (this.dom.confirmEffectsHeader) {
+      this.dom.confirmEffectsHeader.textContent = '🧹 LOCAL BROWSER STORAGE PURGE:';
+    }
+    if (this.dom.confirmParadigmEffectsText) {
+      this.dom.confirmParadigmEffectsText.innerHTML = `All saves will be deleted from <code>localStorage</code>. The game resets to a brand-new factory state without needing to clear browser history.`;
+    }
+    if (this.dom.confirmWarningIcon) this.dom.confirmWarningIcon.textContent = '🚨';
+    if (this.dom.confirmWarningText) {
+      this.dom.confirmWarningText.textContent = 'Warning: This action is permanent and cannot be undone!';
+    }
+    if (this.dom.confirmPurgeOptionContainer) {
+      this.dom.confirmPurgeOptionContainer.style.display = 'none';
+    }
+    if (this.dom.btnExecuteShift) {
+      this.dom.btnExecuteShift.innerHTML = '<span>💥 Erase All Data & Hard Reset</span>';
+      this.dom.btnExecuteShift.classList.add('btn-danger-purge');
     }
 
     if (this.dom.paradigmConfirmModal) {
@@ -548,6 +659,19 @@ export class GameUI {
   }
 
   executeConfirmedShift() {
+    if (this.pendingParadigmChoice === 'purge_all_data') {
+      this.closeConfirmModal();
+      this.closeParadigmModal();
+      this.engine.purgeAllData();
+      const currentEra = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
+      this.updateTheme(currentEra.themeClass);
+      this.switchMobileTab('production');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.renderAll();
+      this.showToast('🧹 Memory Purged', 'All local save data and timeline progress have been completely reset.', '✨');
+      return;
+    }
+
     if (this.pendingParadigmChoice === 'simple_restart') {
       this.closeConfirmModal();
       this.engine.resetTimeline();
@@ -1035,23 +1159,51 @@ export class GameUI {
     this.dom.statInsights.innerText = GameUI.formatNumber(this.engine.insights);
     this.dom.statRate.innerText = `+${GameUI.formatNumber(this.engine.getTotalRate())} / s`;
     this.updateEraProgressBar();
+
+    // Auto-save every 5 seconds
+    if (!this.lastAutoSaveTime) this.lastAutoSaveTime = timestamp;
+    if (timestamp - this.lastAutoSaveTime >= 5000) {
+      this.engine.saveToStorage();
+      this.lastAutoSaveTime = timestamp;
+    }
     
-    // Periodically update buy button affordabilities without full re-render
+    // Periodically update buy button affordabilities & dynamic MAX labels without full re-render
     const buyButtons = this.dom.generatorList.querySelectorAll('.btn-buy-gen');
     const availableGenerators = GENERATORS.filter(g => g.eraId <= this.engine.currentEraId);
     
     buyButtons.forEach((btn, idx) => {
       const gen = availableGenerators[idx];
       if (gen) {
-        let canAfford = false;
         if (this.engine.bulkBuyMode === 'max') {
           const maxInfo = this.engine.getGeneratorCost(gen.id, 'max');
-          canAfford = maxInfo.canAffordAny && this.engine.insights >= maxInfo.cost;
+          const canAfford = maxInfo.canAffordAny && this.engine.insights >= maxInfo.cost;
+          btn.disabled = !canAfford;
+          const spans = btn.querySelectorAll('span');
+          if (spans.length >= 2) {
+            spans[0].textContent = `Buy x${maxInfo.count}`;
+            spans[1].textContent = `${GameUI.formatNumber(maxInfo.cost)} (x${maxInfo.count}) 💡`;
+          }
         } else {
           const cost = this.engine.getGeneratorCost(gen.id, this.engine.bulkBuyMode);
-          canAfford = this.engine.insights >= cost;
+          const canAfford = this.engine.insights >= cost;
+          btn.disabled = !canAfford;
         }
-        btn.disabled = !canAfford;
+      }
+    });
+
+    // Update Milestone unlock button affordabilities in real-time
+    const milestoneCards = this.dom.milestoneGrid.querySelectorAll('.milestone-card');
+    const visibleMilestones = MILESTONES.filter(m => m.eraId <= this.engine.currentEraId + 1);
+    
+    milestoneCards.forEach((card, idx) => {
+      const ms = visibleMilestones[idx];
+      if (ms) {
+        const unlockBtn = card.querySelector('.btn-unlock-ms');
+        if (unlockBtn) {
+          const cost = this.engine.getMilestoneCost(ms.id);
+          const canAfford = this.engine.insights >= cost;
+          unlockBtn.disabled = !canAfford;
+        }
       }
     });
 

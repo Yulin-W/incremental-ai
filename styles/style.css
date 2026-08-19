@@ -2268,6 +2268,77 @@ body {
   box-shadow: 0 0 15px rgba(168, 85, 247, 0.1);
 }
 
+/* ==========================================================================
+   PERSISTENCE & HARD RESET / PURGE CONTROLS
+   ========================================================================== */
+
+.btn-paradigm-purge {
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.65rem 1rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px dashed rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-md);
+  color: #fca5a5;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-paradigm-purge:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.7);
+  color: #fef2f2;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-paradigm-purge:active {
+  transform: translateY(0);
+}
+
+.confirm-purge-option-container {
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-subtle-purge {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0.25rem 0.5rem;
+  transition: color var(--transition-fast);
+}
+
+.btn-subtle-purge:hover {
+  color: #f87171;
+}
+
+.btn-confirm-execute.btn-danger-purge {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border-color: rgba(239, 68, 68, 0.8);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.35);
+}
+
+.btn-confirm-execute.btn-danger-purge:hover {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  box-shadow: 0 0 22px rgba(239, 68, 68, 0.55);
+}
+
+
 
 
 

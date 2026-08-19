@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Incremental AI: An Idle Game of AI History - An interactive educational idle web game tracing the history of Artificial Intelligence from antiquity to frontier autonomous agents.">
   <title>Incremental AI: An Idle Game of AI History</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='16' fill='%2312100e'/><text x='50' y='54' text-anchor='middle' dominant-baseline='central' font-family='sans-serif' font-weight='800' font-size='52' fill='%23d4af37'>AI</text></svg>">
   
   <!-- Modern Typography Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -320,6 +321,9 @@
             <span class="btn-civ-main">🌌 "Just One More Insight..."</span>
             <span class="btn-civ-sub">Continue in current timeline (You can Paradigm Shift anytime from the top-right header button)</span>
           </button>
+          <button id="btn-request-purge" class="btn-paradigm-purge" type="button" aria-label="Clear All Saved Memory and Hard Reset">
+            <span>🧹 Clear All Saved Memory & Hard Reset (Wipe Local Storage)</span>
+          </button>
         </div>
       </footer>
     </div>
@@ -330,7 +334,7 @@
     <div class="modal-dialog paradigm-confirm-dialog">
       <header class="modal-header paradigm-confirm-header">
         <div class="event-badge-group">
-          <span class="event-category-badge paradigm-confirm-badge">⚠️ CONFIRM PARADIGM SHIFT</span>
+          <span id="confirm-modal-badge" class="event-category-badge paradigm-confirm-badge">⚠️ CONFIRM PARADIGM SHIFT</span>
         </div>
         <button id="btn-close-confirm" class="btn-modal-close" aria-label="Cancel Paradigm Shift">✕</button>
       </header>
@@ -347,13 +351,19 @@
         </div>
 
         <div class="paradigm-confirm-card" id="confirm-paradigm-effects-card">
-          <div class="confirm-effects-header">⚡ ACTIVE BUFFS FOR NEXT RUN:</div>
+          <div class="confirm-effects-header" id="confirm-effects-header">⚡ ACTIVE BUFFS FOR NEXT RUN:</div>
           <div class="confirm-effects-body" id="confirm-paradigm-effects-text"></div>
         </div>
 
-        <div class="paradigm-confirm-warning">
-          <span>ℹ️</span>
-          <span>Current insights, generators, and milestone discoveries will reset to Epoch 1.</span>
+        <div class="paradigm-confirm-warning" id="confirm-warning-box">
+          <span id="confirm-warning-icon">ℹ️</span>
+          <span id="confirm-warning-text">Current insights, generators, and milestone discoveries will reset to Epoch 1.</span>
+        </div>
+
+        <div id="confirm-purge-option-container" class="confirm-purge-option-container" style="display: none;">
+          <button id="btn-purge-from-simple" class="btn-subtle-purge" type="button">
+            <span>🧹 Want a clean slate? Wipe all local save data completely & Hard Reset →</span>
+          </button>
         </div>
       </div>
 

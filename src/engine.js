@@ -5,6 +5,9 @@
 
 import { ERAS, GENERATORS, MILESTONES, PARADIGMS, SINGULARITY_EVENT } from './historyData.js';
 
+export const SAVE_STORAGE_KEY = 'incremental_ai_save_v1';
+export const SAVE_SCHEMA_VERSION = 1;
+
 export class GameEngine {
   constructor() {
     this.version = null;
@@ -287,6 +290,7 @@ export class GameEngine {
       if (maxInfo.canAffordAny && this.insights >= maxInfo.cost) {
         this.insights -= maxInfo.cost;
         this.generators[generatorId] = (this.generators[generatorId] || 0) + maxInfo.count;
+        this.saveToStorage();
         this.emit('stateChange');
         return true;
       }
@@ -299,6 +303,7 @@ export class GameEngine {
     if (this.insights >= cost) {
       this.insights -= cost;
       this.generators[generatorId] = (this.generators[generatorId] || 0) + buyCount;
+      this.saveToStorage();
       this.emit('stateChange');
       return true;
     }
@@ -333,6 +338,7 @@ export class GameEngine {
       this.unlockedMilestones.add(milestoneId);
       this.selectedMilestoneId = milestoneId;
       this.checkEraProgression();
+      this.saveToStorage();
       this.emit('milestoneUnlock', ms);
       this.emit('stateChange');
       return true;
@@ -408,6 +414,7 @@ export class GameEngine {
     });
 
     this.initStartingEra();
+    this.saveToStorage();
     this.emit('stateChange');
     return true;
   }
@@ -427,6 +434,146 @@ export class GameEngine {
     this.selectedMilestoneId = "ms_talos";
 
     this.initStartingEra();
+    this.saveToStorage();
+    this.emit('stateChange');
+    return true;
+  }
+
+  // ==========================================
+  // SERIALIZATION & PERSISTENCE
+  // ==========================================
+
+  serializeState() {
+    return {
+      saveVersion: SAVE_SCHEMA_VERSION,
+      timestamp: Date.now(),
+      meta: {
+        replayCount: this.replayCount || 0,
+        completedParadigms: Array.from(this.completedParadigms || []),
+        hasEverUnlockedSingularity: !!this.hasEverUnlockedSingularity,
+        hasAchievedSingularity: !!this.hasAchievedSingularity
+      },
+      run: {
+        insights: typeof this.insights === 'number' && !isNaN(this.insights) ? this.insights : 0,
+        totalInsightsEarned: typeof this.totalInsightsEarned === 'number' && !isNaN(this.totalInsightsEarned) ? this.totalInsightsEarned : 0,
+        currentEraId: this.currentEraId || 1,
+        generators: { ...this.generators },
+        unlockedMilestones: Array.from(this.unlockedMilestones || []),
+        bulkBuyMode: this.bulkBuyMode || 1,
+        selectedMilestoneId: this.selectedMilestoneId || "ms_talos",
+        activeParadigmId: this.activeParadigmId || null,
+        cyberneticBoostTimer: typeof this.cyberneticBoostTimer === 'number' ? Math.max(0, this.cyberneticBoostTimer) : 0
+      }
+    };
+  }
+
+  loadState(saveData) {
+    if (!saveData || typeof saveData !== 'object') return false;
+
+    try {
+      // 1. Meta Heritage Restoration (persists across runs/clears)
+      if (saveData.meta && typeof saveData.meta === 'object') {
+        this.replayCount = Number(saveData.meta.replayCount) || 0;
+        this.completedParadigms = new Set(
+          Array.isArray(saveData.meta.completedParadigms)
+            ? saveData.meta.completedParadigms.filter(id => PARADIGMS.some(p => p.id === id))
+            : []
+        );
+        this.hasEverUnlockedSingularity = !!saveData.meta.hasEverUnlockedSingularity;
+        this.hasAchievedSingularity = !!saveData.meta.hasAchievedSingularity;
+      }
+
+      // 2. Active Run State Restoration
+      if (saveData.run && typeof saveData.run === 'object') {
+        const run = saveData.run;
+        this.insights = typeof run.insights === 'number' && !isNaN(run.insights) ? Math.max(0, run.insights) : 0;
+        this.totalInsightsEarned = typeof run.totalInsightsEarned === 'number' && !isNaN(run.totalInsightsEarned) ? Math.max(0, run.totalInsightsEarned) : 0;
+        this.currentEraId = typeof run.currentEraId === 'number' ? Math.max(1, Math.min(run.currentEraId, 7)) : 1;
+
+        // Restore generators
+        GENERATORS.forEach(g => {
+          const count = run.generators && typeof run.generators[g.id] === 'number' ? Math.max(0, Math.floor(run.generators[g.id])) : 0;
+          this.generators[g.id] = count;
+        });
+
+        // Restore milestones
+        this.unlockedMilestones = new Set(
+          Array.isArray(run.unlockedMilestones)
+            ? run.unlockedMilestones.filter(id => MILESTONES.some(m => m.id === id))
+            : []
+        );
+
+        this.bulkBuyMode = [1, 10, 'max'].includes(run.bulkBuyMode) ? run.bulkBuyMode : 1;
+        this.selectedMilestoneId = typeof run.selectedMilestoneId === 'string' && MILESTONES.some(m => m.id === run.selectedMilestoneId)
+          ? run.selectedMilestoneId
+          : "ms_talos";
+        this.activeParadigmId = typeof run.activeParadigmId === 'string' && PARADIGMS.some(p => p.id === run.activeParadigmId)
+          ? run.activeParadigmId
+          : null;
+        this.cyberneticBoostTimer = typeof run.cyberneticBoostTimer === 'number' ? Math.max(0, run.cyberneticBoostTimer) : 0;
+      }
+
+      this.emit('stateChange');
+      return true;
+    } catch (e) {
+      console.warn('Could not deserialize save state:', e);
+      return false;
+    }
+  }
+
+  saveToStorage() {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return false;
+      const serialized = JSON.stringify(this.serializeState());
+      window.localStorage.setItem(SAVE_STORAGE_KEY, serialized);
+      return true;
+    } catch (e) {
+      console.warn('Auto-save to localStorage failed:', e);
+      return false;
+    }
+  }
+
+  loadFromStorage() {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return false;
+      const raw = window.localStorage.getItem(SAVE_STORAGE_KEY);
+      if (!raw) return false;
+      const parsed = JSON.parse(raw);
+      return this.loadState(parsed);
+    } catch (e) {
+      console.warn('Auto-load from localStorage failed:', e);
+      return false;
+    }
+  }
+
+  purgeAllData() {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(SAVE_STORAGE_KEY);
+      }
+    } catch (e) {
+      console.warn('Purge localStorage failed:', e);
+    }
+
+    // Reset all runtime state to clean initial defaults
+    this.insights = 0;
+    this.totalInsightsEarned = 0;
+    this.currentEraId = 1;
+    this.unlockedMilestones.clear();
+    this.completedParadigms.clear();
+    this.activeParadigmId = null;
+    this.replayCount = 0;
+    this.hasAchievedSingularity = false;
+    this.hasEverUnlockedSingularity = false;
+    this.cyberneticBoostTimer = 0;
+    this.selectedMilestoneId = "ms_talos";
+    this.bulkBuyMode = 1;
+
+    GENERATORS.forEach(g => {
+      this.generators[g.id] = 0;
+    });
+
+    this.initStartingEra();
     this.emit('stateChange');
     return true;
   }
@@ -435,12 +582,21 @@ export class GameEngine {
   // TICK LOOP
   // ==========================================
 
-  tick(currentTime) {
+  tick(currentTime = (typeof performance !== 'undefined' ? performance.now() : Date.now())) {
+    if (typeof currentTime !== 'number' || isNaN(currentTime)) {
+      currentTime = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    }
+
+    if (typeof this.lastTickTime !== 'number' || isNaN(this.lastTickTime) || this.lastTickTime <= 0) {
+      this.lastTickTime = currentTime;
+      return;
+    }
+
     const deltaMs = currentTime - this.lastTickTime;
     this.lastTickTime = currentTime;
 
-    // Clamp delta time to max 1.0s to prevent explosion if tab was backgrounded
-    const deltaSeconds = Math.min(deltaMs / 1000, 1.0);
+    // Clamp delta time between 0.0s and 1.0s to prevent explosion or negative drift
+    const deltaSeconds = Math.max(0, Math.min(deltaMs / 1000, 1.0));
 
     if (deltaSeconds > 0) {
       // Decrement cybernetics boost timer if active

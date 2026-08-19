@@ -5,6 +5,7 @@
 
 import { GENERATORS } from '../../data/index.js';
 import { formatNumber } from '../utils/formatters.js';
+import { i18n } from '../../locales/index.js';
 
 export function renderGenerators(ui) {
   if (!ui.dom.generatorList) return;
@@ -13,7 +14,8 @@ export function renderGenerators(ui) {
 
   ui.dom.generatorList.innerHTML = '';
 
-  availableGenerators.forEach(gen => {
+  availableGenerators.forEach(genBase => {
+    const gen = i18n.getGenerator(genBase.id) || genBase;
     const count = ui.engine.generators[gen.id] || 0;
     const rate = ui.engine.getGeneratorRate(gen.id);
 
@@ -33,6 +35,9 @@ export function renderGenerators(ui) {
       canAfford = ui.engine.insights >= cost;
     }
 
+    const buyLabel = i18n.t('ui.buyCount', { count: buyCount });
+    const baseRateText = i18n.t('ui.baseRateEach', { rate: gen.baseRate });
+
     const card = document.createElement('div');
     card.className = 'generator-card';
     card.innerHTML = `
@@ -48,10 +53,10 @@ export function renderGenerators(ui) {
       </div>
       <div class="gen-stats-row">
         <span class="gen-output-rate">+${formatNumber(rate)}/s</span>
-        <span class="gen-base-rate">+${gen.baseRate}/s each</span>
+        <span class="gen-base-rate">${baseRateText}</span>
       </div>
       <button class="btn-buy-gen" ${!canAfford ? 'disabled' : ''}>
-        <span>Buy x${buyCount}</span>
+        <span>${buyLabel}</span>
         <span>${costText} 💡</span>
       </button>
     `;
@@ -79,7 +84,7 @@ export function updateGeneratorAffordances(ui) {
         btn.disabled = !canAfford;
         const spans = btn.querySelectorAll('span');
         if (spans.length >= 2) {
-          spans[0].textContent = `Buy x${maxInfo.count}`;
+          spans[0].textContent = i18n.t('ui.buyCount', { count: maxInfo.count });
           spans[1].textContent = `${formatNumber(maxInfo.cost)} (x${maxInfo.count}) 💡`;
         }
       } else {
@@ -90,3 +95,4 @@ export function updateGeneratorAffordances(ui) {
     }
   });
 }
+

@@ -18,6 +18,7 @@ import { renderHeader, updateEraProgressBar } from './ui/components/headerRender
 import { renderGenerators, updateGeneratorAffordances } from './ui/components/productionRenderer.js';
 import { renderTimeline, updateMilestoneAffordances } from './ui/components/timelineRenderer.js';
 import { renderCodex } from './ui/components/codexRenderer.js';
+import { i18n, SUPPORTED_LANGUAGES } from './locales/index.js';
 
 export class GameUI {
   constructor() {
@@ -29,6 +30,7 @@ export class GameUI {
     this.isHelpModalOpen = false;
     this.isParadigmModalOpen = false;
     this.isParadigmConfirmOpen = false;
+    this.isLanguageDropdownOpen = false;
     this.pendingParadigmChoice = null;
 
     this.initDOMReferences();
@@ -45,9 +47,12 @@ export class GameUI {
     this.isTabActivePrimary = this.multiTabCoordinator.isTabActivePrimary;
     this.tabId = this.multiTabCoordinator.tabId;
 
+    this.initLanguageSelector();
     this.bindEvents();
     this.setupEngineSubscriptions();
+    this.setupI18nSubscriptions();
     this.loadVersion();
+    this.updateLanguageUI();
 
     // Expose instance for testing / harness access
     if (typeof window !== 'undefined') {
@@ -73,10 +78,14 @@ export class GameUI {
         this.engine.totalInsightsEarned += offline.offlineGain;
 
         const durationText = GameUI.formatDuration(offline.elapsedSeconds);
-        const capNotice = offline.isCapped ? ' (4h cap)' : '';
+        const capNotice = offline.isCapped ? i18n.t('ui.capNotice') : '';
         this.showToast(
-          '⏰ While You Were Away',
-          `+${GameUI.formatNumber(offline.offlineGain)} 💡 generated over ${durationText}${capNotice}`,
+          i18n.t('ui.whileAwayTitle'),
+          i18n.t('ui.whileAwayMsg', {
+            gain: GameUI.formatNumber(offline.offlineGain),
+            duration: durationText,
+            cap: capNotice
+          }),
           '⏳'
         );
 
@@ -125,7 +134,7 @@ export class GameUI {
 
   async loadVersion() {
     try {
-      if (typeof fetch === 'undefined') return;
+      if (typeof fetch === 'undefined' || typeof window === 'undefined' || !window.location || !window.location.origin) return;
       const response = await fetch('./VERSION');
       if (response.ok) {
         const version = (await response.text()).trim();
@@ -153,13 +162,24 @@ export class GameUI {
       // Header
       versionTag: document.querySelector('.version-tag'),
       btnHelp: document.getElementById('btn-help'),
+      btnHelpText: document.getElementById('btn-help-text'),
       eraPillNumber: document.getElementById('era-pill-number'),
       eraPillName: document.getElementById('era-pill-name'),
       eraPillDates: document.getElementById('era-pill-dates'),
       eraProgressBarFill: document.getElementById('era-progress-bar-fill'),
       eraProgressText: document.getElementById('era-progress-text'),
+      labelInsights: document.getElementById('label-insights'),
+      labelRate: document.getElementById('label-rate'),
       statInsights: document.getElementById('stat-insights'),
       statRate: document.getElementById('stat-rate'),
+
+      // Language Selector
+      languagePickerContainer: document.getElementById('language-picker-container'),
+      btnLanguage: document.getElementById('btn-language'),
+      currentLangFlag: document.getElementById('current-lang-flag'),
+      currentLangCode: document.getElementById('current-lang-code'),
+      languageDropdown: document.getElementById('language-dropdown'),
+      brandSubtitle: document.querySelector('.brand-subtitle'),
 
       // Unified Active Paradigm Header Button
       activeParadigmBadge: document.getElementById('active-paradigm-badge'),
@@ -168,15 +188,20 @@ export class GameUI {
       paradigmBadgeName: document.getElementById('paradigm-badge-name'),
 
       // Left Panel (Production Hub)
+      panelProductionTitle: document.getElementById('panel-production-title') || document.querySelector('#panel-production .panel-title'),
       btnContemplate: document.getElementById('btn-contemplate'),
+      btnContemplateSpan: document.querySelector('#btn-contemplate span:last-child'),
       clickGainBadge: document.getElementById('click-gain-badge'),
+      bulkLabel: document.querySelector('.bulk-label'),
       bulkButtons: document.querySelectorAll('.btn-bulk'),
       generatorList: document.getElementById('generator-list'),
 
       // Center Panel (Timeline)
+      panelTimelineTitle: document.getElementById('panel-timeline-title') || document.querySelector('#panel-timeline .panel-title'),
       milestoneGrid: document.getElementById('milestone-grid'),
 
       // Right Panel (Codex)
+      panelCodexTitle: document.getElementById('panel-codex-title') || document.querySelector('#panel-codex .panel-title'),
       codexContainer: document.getElementById('codex-container'),
 
       // Mobile Tabs & Panels
@@ -192,42 +217,39 @@ export class GameUI {
 
       // Paradox-Style Historical Event Modal Dialog
       eventModal: document.getElementById('event-modal'),
-      eventModalCategory: document.getElementById('event-modal-category'),
-      eventModalEpochPill: document.getElementById('event-modal-epoch-pill'),
-      eventModalIcon: document.getElementById('event-modal-icon'),
+      btnCloseEvent: document.getElementById('btn-close-event'),
+      btnDismissEvent: document.getElementById('btn-dismiss-event'),
+      eventModalHeroBadge: document.querySelector('.event-modal-header .event-category-badge'),
+      eventModalEpochPill: document.querySelector('.event-modal-header .event-epoch-pill'),
       eventModalTitle: document.getElementById('event-modal-title'),
-      eventModalSubtitle: document.getElementById('event-modal-subtitle'),
+      eventModalSubtitle: document.querySelector('.event-modal-subtitle'),
       eventModalNarrative: document.getElementById('event-modal-narrative'),
       eventModalQuoteText: document.getElementById('event-modal-quote-text'),
       eventModalQuoteAuthor: document.getElementById('event-modal-quote-author'),
-      eventModalBtnText: document.getElementById('event-modal-btn-text'),
-      btnEventAcknowledge: document.getElementById('btn-event-acknowledge'),
-      btnCloseEvent: document.getElementById('btn-close-event'),
 
       // Paradigm Shift / Singularity Modal Dialog
       paradigmModal: document.getElementById('paradigm-modal'),
+      btnCloseParadigm: document.getElementById('btn-close-paradigm'),
       paradigm2x2Grid: document.getElementById('paradigm-2x2-grid'),
       paradigmVanillaSlot: document.getElementById('paradigm-vanilla-slot'),
       btnStayTimeline: document.getElementById('btn-stay-timeline'),
-      btnCloseParadigm: document.getElementById('btn-close-paradigm'),
       btnRequestPurge: document.getElementById('btn-request-purge'),
 
       // Paradigm Shift Confirmation Modal Dialog
       paradigmConfirmModal: document.getElementById('paradigm-confirm-modal'),
+      btnCloseConfirm: document.getElementById('btn-close-confirm'),
       confirmModalBadge: document.getElementById('confirm-modal-badge'),
       confirmParadigmIcon: document.getElementById('confirm-paradigm-icon'),
       confirmParadigmTitle: document.getElementById('confirm-paradigm-title'),
       confirmParadigmDesc: document.getElementById('confirm-paradigm-desc'),
       confirmEffectsHeader: document.getElementById('confirm-effects-header'),
       confirmParadigmEffectsText: document.getElementById('confirm-paradigm-effects-text'),
-      confirmWarningBox: document.getElementById('confirm-warning-box'),
       confirmWarningIcon: document.getElementById('confirm-warning-icon'),
       confirmWarningText: document.getElementById('confirm-warning-text'),
-      confirmPurgeOptionContainer: document.getElementById('confirm-purge-option-container'),
-      btnPurgeFromSimple: document.getElementById('btn-purge-from-simple'),
       btnCancelConfirm: document.getElementById('btn-cancel-confirm'),
       btnExecuteShift: document.getElementById('btn-execute-shift'),
-      btnCloseConfirm: document.getElementById('btn-close-confirm'),
+      confirmPurgeOptionContainer: document.getElementById('confirm-purge-option-container'),
+      btnPurgeFromSimple: document.getElementById('btn-purge-from-simple'),
 
       // Multi-Tab Protection Lock Overlay
       multiTabOverlay: document.getElementById('multi-tab-overlay'),
@@ -239,11 +261,164 @@ export class GameUI {
   }
 
   // ==========================================
+  // LANGUAGE SELECTOR & LOCALIZATION
+  // ==========================================
+
+  initLanguageSelector() {
+    if (!this.dom.languagePickerContainer || !this.dom.languageDropdown) return;
+
+    const currentLang = i18n.getLanguage();
+    this.dom.languageDropdown.innerHTML = '';
+
+    SUPPORTED_LANGUAGES.forEach(lang => {
+      const opt = document.createElement('button');
+      opt.className = `lang-option ${lang.code === currentLang ? 'active' : ''}`;
+      opt.dataset.lang = lang.code;
+      opt.setAttribute('role', 'menuitem');
+      opt.innerHTML = `
+        <span class="option-flag">${lang.flag}</span>
+        <span class="option-name">${lang.name}</span>
+        <span class="option-native">${lang.nativeName}</span>
+        ${lang.code === currentLang ? '<span class="option-check">✓</span>' : ''}
+      `;
+
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.selectLanguage(lang.code);
+      });
+
+      this.dom.languageDropdown.appendChild(opt);
+    });
+
+    this.updateLanguageButtonDisplay(currentLang);
+  }
+
+  updateLanguageButtonDisplay(langCode) {
+    const langObj = SUPPORTED_LANGUAGES.find(l => l.code === langCode) || SUPPORTED_LANGUAGES[0];
+    if (this.dom.currentLangFlag) this.dom.currentLangFlag.textContent = langObj.flag;
+    if (this.dom.currentLangCode) this.dom.currentLangCode.textContent = langObj.code.toUpperCase();
+
+    if (this.dom.languageDropdown) {
+      const options = this.dom.languageDropdown.querySelectorAll('.lang-option');
+      options.forEach(opt => {
+        const isSelected = opt.dataset.lang === langCode;
+        opt.classList.toggle('active', isSelected);
+        const existingCheck = opt.querySelector('.option-check');
+        if (isSelected && !existingCheck) {
+          const check = document.createElement('span');
+          check.className = 'option-check';
+          check.textContent = '✓';
+          opt.appendChild(check);
+        } else if (!isSelected && existingCheck) {
+          existingCheck.remove();
+        }
+      });
+    }
+  }
+
+  toggleLanguageDropdown(forceOpen) {
+    if (!this.dom.languageDropdown || !this.dom.btnLanguage) return;
+    const shouldOpen = forceOpen !== undefined ? forceOpen : !this.isLanguageDropdownOpen;
+    this.isLanguageDropdownOpen = shouldOpen;
+
+    if (shouldOpen) {
+      this.dom.languageDropdown.style.display = 'block';
+      this.dom.btnLanguage.setAttribute('aria-expanded', 'true');
+    } else {
+      this.dom.languageDropdown.style.display = 'none';
+      this.dom.btnLanguage.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  selectLanguage(langCode) {
+    i18n.setLanguage(langCode);
+    this.toggleLanguageDropdown(false);
+  }
+
+  setupI18nSubscriptions() {
+    i18n.on('languageChange', ({ lang }) => {
+      this.updateLanguageButtonDisplay(lang);
+      this.updateLanguageUI();
+      this.renderAll();
+      if (this.isHelpModalOpen) {
+        this.helpModalController.renderLocalizedContent();
+      }
+      if (this.isParadigmModalOpen) {
+        this.paradigmModalController.openParadigmModal();
+      }
+      if (this.isParadigmConfirmOpen) {
+        if (this.pendingParadigmChoice === 'simple_restart') {
+          this.paradigmModalController.requestSimpleRestart();
+        } else if (this.pendingParadigmChoice === 'purge_all_data') {
+          this.paradigmModalController.requestPurgeData();
+        } else {
+          this.paradigmModalController.requestParadigmShift(this.pendingParadigmChoice);
+        }
+      }
+    });
+  }
+
+  updateLanguageUI() {
+    if (this.dom.brandSubtitle) {
+      this.dom.brandSubtitle.textContent = i18n.t('ui.brandSubtitle');
+    }
+    if (this.dom.labelInsights) {
+      this.dom.labelInsights.textContent = `💡 ${i18n.t('ui.insights')}`;
+    }
+    if (this.dom.labelRate) {
+      this.dom.labelRate.textContent = i18n.t('ui.perSecond');
+    }
+    if (this.dom.btnHelpText) {
+      this.dom.btnHelpText.textContent = i18n.t('ui.help');
+    }
+    if (this.dom.btnContemplateSpan) {
+      this.dom.btnContemplateSpan.textContent = i18n.t('ui.think');
+    }
+    if (this.dom.bulkLabel) {
+      this.dom.bulkLabel.textContent = i18n.t('ui.buy');
+    }
+    if (this.dom.panelProductionTitle) {
+      this.dom.panelProductionTitle.innerHTML = `<span>⚡</span> ${i18n.t('ui.production')}`;
+    }
+    if (this.dom.panelTimelineTitle) {
+      this.dom.panelTimelineTitle.innerHTML = `<span>⏳</span> ${i18n.t('ui.timeline')}`;
+    }
+    if (this.dom.panelCodexTitle) {
+      this.dom.panelCodexTitle.innerHTML = `<span>📖</span> ${i18n.t('ui.codex')}`;
+    }
+    if (this.dom.mobileTabButtons) {
+      this.dom.mobileTabButtons.forEach(btn => {
+        const tab = btn.dataset.tab;
+        if (tab === 'production') btn.textContent = `⚡ ${i18n.t('ui.production')}`;
+        if (tab === 'timeline') btn.textContent = `⏳ ${i18n.t('ui.timeline')}`;
+        if (tab === 'codex') btn.textContent = `📖 ${i18n.t('ui.codex')}`;
+      });
+    }
+  }
+
+  // ==========================================
   // EVENT BINDINGS
   // ==========================================
 
   bindEvents() {
     if (typeof document === 'undefined') return;
+
+    // Language Dropdown Toggle
+    if (this.dom.btnLanguage) {
+      this.dom.btnLanguage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleLanguageDropdown();
+      });
+    }
+
+    // Dismiss Language Dropdown when clicking outside
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', (e) => {
+        if (this.isLanguageDropdownOpen && !e.target.closest('#language-picker-container')) {
+          this.toggleLanguageDropdown(false);
+        }
+      });
+    }
 
     // Think Button Click
     if (this.dom.btnContemplate) {
@@ -279,6 +454,12 @@ export class GameUI {
     // Global Keydown Handler for Modals
     if (typeof window !== 'undefined') {
       window.addEventListener('keydown', (e) => {
+        // Dismiss Language Dropdown on Escape
+        if (e.key === 'Escape' && this.isLanguageDropdownOpen) {
+          this.toggleLanguageDropdown(false);
+          return;
+        }
+
         // Prioritize Confirmation Modal
         if (this.dom.paradigmConfirmModal && this.dom.paradigmConfirmModal.classList.contains('active')) {
           if (e.key === 'Escape') {
@@ -326,11 +507,17 @@ export class GameUI {
     });
 
     this.engine.on('milestoneUnlock', (milestone) => {
-      this.showToast('✨ Breakthrough Unlocked!', milestone.title, '🔬');
+      const localizedMs = i18n.getMilestone(milestone.id) || milestone;
+      this.showToast(i18n.t('ui.breakthroughToast'), localizedMs.title, '🔬');
     });
 
     this.engine.on('eraUnlock', (era) => {
-      this.showToast(`🏛️ Entering Epoch ${era.id}: ${era.name}`, era.subtitle, '⏳');
+      const locEpoch = i18n.getEpoch(era.id) || era;
+      this.showToast(
+        i18n.t('ui.epochToast', { id: era.id, name: locEpoch.name }),
+        locEpoch.subtitle,
+        '⏳'
+      );
       this.updateTheme(era.themeClass);
 
       const eventData = ERA_EVENTS[era.id] || EPOCH_EVENTS[era.id];
@@ -340,14 +527,23 @@ export class GameUI {
     });
 
     this.engine.on('singularityReached', () => {
-      this.showToast('🌌 Frontier Singularity Achieved!', 'All 28 historical milestones discovered! Paradigm Shift is now unlocked.', '🌌');
+      this.showToast(
+        i18n.t('ui.singularityToastTitle'),
+        i18n.t('ui.singularityToastMsg'),
+        '🌌'
+      );
       this.openParadigmModal();
     });
 
     this.engine.on('paradigmShift', () => {
-      const paradigm = this.engine.getActiveParadigm();
-      const name = paradigm ? paradigm.name : 'Standard Historical Mode';
-      this.showToast('🌌 Paradigm Shift Activated', `Beginning historical cycle with ${name}.`, '🚀');
+      const rawParadigm = this.engine.getActiveParadigm();
+      const paradigm = rawParadigm ? i18n.getParadigm(rawParadigm.id) : null;
+      const name = paradigm ? paradigm.name : i18n.t('ui.standardReplay');
+      this.showToast(
+        i18n.t('ui.paradigmActivatedTitle'),
+        i18n.t('ui.paradigmActivatedMsg', { name }),
+        '🚀'
+      );
     });
   }
 

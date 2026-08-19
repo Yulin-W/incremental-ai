@@ -4,12 +4,16 @@
  */
 
 import { MILESTONES } from '../../data/index.js';
+import { i18n } from '../../locales/index.js';
 
 export function renderCodex(ui) {
   if (!ui.dom.codexContainer) return;
   const selectedId = ui.engine.selectedMilestoneId;
-  const ms = MILESTONES.find(m => m.id === selectedId) || MILESTONES[0];
+  const ms = i18n.getMilestone(selectedId) || i18n.getMilestone('ms_talos') || MILESTONES[0];
   const isUnlocked = ui.engine.unlockedMilestones.has(ms.id);
+
+  const statusPillText = isUnlocked ? i18n.t('ui.unlockedArchived') : i18n.t('ui.lockedEntry');
+  const bonusTitle = isUnlocked ? i18n.t('ui.activeBonus') : i18n.t('ui.inactiveBonus');
 
   ui.dom.codexContainer.innerHTML = `
     <div class="codex-detail">
@@ -18,7 +22,7 @@ export function renderCodex(ui) {
         <div class="codex-header-top">
           <span class="codex-epoch-tag">EPOCH ${ms.eraId} • ${ms.year}</span>
           <span class="codex-status-pill ${isUnlocked ? 'pill-unlocked' : 'pill-locked'}">
-            ${isUnlocked ? '✓ Unlocked & Archived' : '🔒 Locked Entry'}
+            ${statusPillText}
           </span>
         </div>
         <div class="codex-title">${ms.title}</div>
@@ -27,19 +31,19 @@ export function renderCodex(ui) {
 
       <!-- Paradigm Shift -->
       <div class="codex-section">
-        <div class="codex-section-label">Paradigm Shift</div>
+        <div class="codex-section-label">${i18n.t('ui.paradigmShiftLabel')}</div>
         <div class="paradigm-box">${ms.paradigmShift}</div>
       </div>
 
       <!-- Educational Lore -->
       <div class="codex-section">
-        <div class="codex-section-label">Historical Lore & Scientific Context</div>
+        <div class="codex-section-label">${i18n.t('ui.historicalLoreLabel')}</div>
         <div class="lore-body">${ms.educationalLore}</div>
       </div>
 
       <!-- Primary Academic Citation -->
       <div class="codex-section">
-        <div class="codex-section-label">Primary Academic Citation</div>
+        <div class="codex-section-label">${i18n.t('ui.academicCitationLabel')}</div>
         <div class="citation-card">
           📖 ${ms.citation}
         </div>
@@ -47,11 +51,11 @@ export function renderCodex(ui) {
 
       <!-- Gameplay Economic Impact -->
       <div class="codex-section">
-        <div class="codex-section-label">Gameplay Economic Impact</div>
+        <div class="codex-section-label">${i18n.t('ui.gameplayImpactLabel')}</div>
         <div class="gameplay-impact-card ${isUnlocked ? 'bonus-active' : 'bonus-inactive'}">
           <span class="bonus-icon">${isUnlocked ? '⚡' : '⏳'}</span>
           <div class="bonus-info">
-            <span class="bonus-title">${isUnlocked ? 'ACTIVE BONUS' : 'INACTIVE BONUS'}:</span>
+            <span class="bonus-title">${bonusTitle}:</span>
             <span class="bonus-desc">${ms.effects.description}</span>
           </div>
         </div>
@@ -59,3 +63,4 @@ export function renderCodex(ui) {
     </div>
   `;
 }
+

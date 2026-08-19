@@ -5,6 +5,7 @@
 
 import { MILESTONES } from '../../data/index.js';
 import { formatNumber } from '../utils/formatters.js';
+import { i18n } from '../../locales/index.js';
 
 export function renderTimeline(ui) {
   if (!ui.dom.milestoneGrid) return;
@@ -12,7 +13,8 @@ export function renderTimeline(ui) {
 
   ui.dom.milestoneGrid.innerHTML = '';
 
-  visibleMilestones.forEach(ms => {
+  visibleMilestones.forEach(msBase => {
+    const ms = i18n.getMilestone(msBase.id) || msBase;
     const isUnlocked = ui.engine.unlockedMilestones.has(ms.id);
     const isAvailable = ui.engine.isMilestoneAvailable(ms.id);
     const isSelected = ui.engine.selectedMilestoneId === ms.id;
@@ -20,14 +22,15 @@ export function renderTimeline(ui) {
     const canAfford = ui.engine.insights >= cost;
 
     let statusClass = 'locked';
-    let actionControl = '<span class="ms-state-btn status-locked">🔒 Locked</span>';
+    let actionControl = `<span class="ms-state-btn status-locked">🔒 ${i18n.t('ui.locked')}</span>`;
 
     if (isUnlocked) {
       statusClass = 'unlocked';
-      actionControl = '<span class="ms-state-btn status-unlocked">✓ Discovered</span>';
+      actionControl = `<span class="ms-state-btn status-unlocked">✓ ${i18n.t('ui.discovered')}</span>`;
     } else if (isAvailable) {
       statusClass = 'available';
-      actionControl = `<button class="btn-unlock-ms" ${!canAfford ? 'disabled' : ''}>Unlock: ${formatNumber(cost)} 💡</button>`;
+      const unlockText = i18n.t('ui.unlockCost', { cost: formatNumber(cost) });
+      actionControl = `<button class="btn-unlock-ms" ${!canAfford ? 'disabled' : ''}>${unlockText}</button>`;
     }
 
     const card = document.createElement('div');
@@ -81,3 +84,4 @@ export function updateMilestoneAffordances(ui) {
     }
   });
 }
+

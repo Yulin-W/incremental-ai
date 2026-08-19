@@ -1,7 +1,4 @@
-/**
- * eventModal.js
- * Paradox-style historical narrative epoch advance modal dialog and event queue controller.
- */
+import { i18n } from '../../locales/index.js';
 
 export class EventModalController {
   constructor(ui) {
@@ -42,36 +39,43 @@ export class EventModalController {
     const event = this.ui.eventQueue.shift();
     this.ui.isEventModalOpen = true;
 
+    const epochNum = event.epochNumber || event.epochId || event.eraId || 1;
+    const locEvent = (typeof epochNum === 'number' || typeof epochNum === 'string') ? (i18n.getEvent(epochNum) || {}) : {};
+
+    const category = locEvent.category || event.category || i18n.t('ui.eventEpochCategory');
+    const title = locEvent.title || event.title || `Epoch ${epochNum}`;
+    const subtitle = locEvent.subtitle || event.subtitle || "";
+    const narrative = locEvent.narrative || event.narrative || "";
+    const quote = locEvent.quote || event.quote || null;
+    const buttonText = locEvent.buttonText || event.buttonText || "Acknowledge & Proceed →";
+
     if (this.ui.dom.eventModalCategory) {
-      this.ui.dom.eventModalCategory.textContent = event.category || "🏛️ NEW EPOCH REACHED";
+      this.ui.dom.eventModalCategory.textContent = category;
     }
     if (this.ui.dom.eventModalEpochPill) {
-      this.ui.dom.eventModalEpochPill.textContent = `Epoch ${event.epochNumber || event.epochId || event.eraId || 1}`;
+      this.ui.dom.eventModalEpochPill.textContent = i18n.t('ui.epoch', { number: epochNum });
     }
     if (this.ui.dom.eventModalIcon) {
       this.ui.dom.eventModalIcon.textContent = event.icon || "📜";
     }
     if (this.ui.dom.eventModalTitle) {
-      const epochNum = event.epochNumber || event.epochId || event.eraId || 1;
-      this.ui.dom.eventModalTitle.textContent = event.title && event.title.startsWith("Epoch")
-        ? event.title
-        : `Epoch ${epochNum}: ${event.title || ''}`;
+      this.ui.dom.eventModalTitle.textContent = title;
     }
     if (this.ui.dom.eventModalSubtitle) {
-      this.ui.dom.eventModalSubtitle.textContent = event.subtitle || "";
+      this.ui.dom.eventModalSubtitle.textContent = subtitle;
     }
     if (this.ui.dom.eventModalNarrative) {
-      this.ui.dom.eventModalNarrative.textContent = event.narrative || "";
+      this.ui.dom.eventModalNarrative.textContent = narrative;
     }
     if (this.ui.dom.eventModalQuoteText) {
-      this.ui.dom.eventModalQuoteText.textContent = event.quote ? event.quote.text : "";
+      this.ui.dom.eventModalQuoteText.textContent = quote ? quote.text : "";
     }
     if (this.ui.dom.eventModalQuoteAuthor) {
-      this.ui.dom.eventModalQuoteAuthor.textContent = event.quote ? `— ${event.quote.author}` : "";
+      this.ui.dom.eventModalQuoteAuthor.textContent = quote ? `— ${quote.author}` : "";
     }
 
     if (this.ui.dom.eventModalBtnText) {
-      this.ui.dom.eventModalBtnText.textContent = event.buttonText || "Acknowledge & Proceed →";
+      this.ui.dom.eventModalBtnText.textContent = buttonText;
     }
 
     if (this.ui.dom.eventModal) {

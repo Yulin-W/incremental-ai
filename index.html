@@ -60,20 +60,32 @@
       <!-- Resource Economy Counter -->
       <div class="resource-stats">
         <div class="stat-group">
-          <span class="stat-label">💡 Insights</span>
+          <span class="stat-label" id="label-insights">💡 Insights</span>
           <span id="stat-insights" class="stat-value-insights">0</span>
         </div>
         <div class="stat-group">
-          <span class="stat-label">per second</span>
+          <span class="stat-label" id="label-rate">per second</span>
           <span id="stat-rate" class="stat-value-rate">+0.0 / s</span>
         </div>
       </div>
 
       <!-- Header Actions / Utilities -->
       <div class="header-actions">
+        <!-- Language Selector Dropdown -->
+        <div class="language-picker-container" id="language-picker-container">
+          <button id="btn-language" class="btn-language" aria-label="Select Language" aria-haspopup="true" aria-expanded="false">
+            <span id="current-lang-flag" class="lang-flag">🇬🇧</span>
+            <span id="current-lang-code" class="lang-code">EN</span>
+            <span class="lang-arrow">▾</span>
+          </button>
+          <div id="language-dropdown" class="language-dropdown" role="menu" aria-label="Language Selector" style="display: none;">
+            <!-- Options rendered by UI -->
+          </div>
+        </div>
+
         <button id="btn-help" class="btn-help" aria-label="Open Game Guide and Help">
           <span class="btn-help-icon">ℹ️</span>
-          <span class="btn-help-text">Help</span>
+          <span class="btn-help-text" id="btn-help-text">Help</span>
         </button>
       </div>
     </div>
@@ -92,7 +104,7 @@
     <!-- LEFT PANEL: Production & Research Automation -->
     <aside id="panel-production" class="panel-container active-mobile-panel" aria-label="Production Hub">
       <div class="panel-header">
-        <h2 class="panel-title"><span>⚡</span> Production</h2>
+        <h2 class="panel-title" id="panel-production-title"><span>⚡</span> Production</h2>
       </div>
       <!-- Persistent Action & Controls Header -->
       <div class="production-sticky-header">
@@ -127,7 +139,7 @@
     <!-- CENTER PANEL: Historical Paradigm Timeline -->
     <section id="panel-timeline" class="panel-container" aria-label="Timeline Progression">
       <div class="panel-header">
-        <h2 class="panel-title"><span>⏳</span> Timeline</h2>
+        <h2 class="panel-title" id="panel-timeline-title"><span>⏳</span> Timeline</h2>
       </div>
       <div class="panel-content">
         <!-- Dynamic Milestones Grid -->
@@ -140,7 +152,7 @@
     <!-- RIGHT PANEL: The Knowledge Codex -->
     <aside id="panel-codex" class="panel-container" aria-label="Knowledge Codex">
       <div class="panel-header">
-        <h2 class="panel-title"><span>📖</span> Knowledge Codex</h2>
+        <h2 class="panel-title" id="panel-codex-title"><span>📖</span> Knowledge Codex</h2>
       </div>
       <div class="panel-content">
         <div id="codex-container">
@@ -173,7 +185,7 @@
         <section class="help-section">
           <h3 class="help-heading">What is this game?</h3>
           <p class="help-text">
-            <strong>Incremental AI</strong> is an interactive educational idle game tracing the history of Artificial Intelligence. Journey across <strong>7 Historical Epochs</strong>—from ancient automata and mechanical calculators to modern deep learning and autonomous frontier agents.
+            An interactive idle game tracing the evolution of Artificial Intelligence across <strong>7 historical epochs</strong>—from ancient automata to modern autonomous agents.
           </p>
         </section>
 
@@ -184,16 +196,16 @@
             <div class="help-step-card">
               <div class="help-step-icon">💡</div>
               <div class="help-step-content">
-                <strong>1. Think & Contemplate</strong>
-                <p>Click the <em>Think</em> button to manually generate Insights and begin scientific discovery.</p>
+                <strong>1. Think & Discover</strong>
+                <p>Click Think to generate initial Insights manually.</p>
               </div>
             </div>
 
             <div class="help-step-card">
               <div class="help-step-icon">⚡</div>
               <div class="help-step-content">
-                <strong>2. Build Production</strong>
-                <p>Purchase historical automation (Water Clocks, Difference Engines, GPUs) for passive Insights/sec.</p>
+                <strong>2. Automate Production</strong>
+                <p>Build historical tools (Calculators, Neural Nets) for passive rate/sec.</p>
               </div>
             </div>
 
@@ -201,23 +213,31 @@
               <div class="help-step-icon">⏳</div>
               <div class="help-step-content">
                 <strong>3. Unlock Milestones</strong>
-                <p>Spend Insights to unlock paradigm shifts, boost multipliers, and advance to new Epochs.</p>
+                <p>Spend Insights on breakthroughs to boost multipliers and reach new Epochs.</p>
               </div>
             </div>
 
             <div class="help-step-card">
               <div class="help-step-icon">📖</div>
               <div class="help-step-content">
-                <strong>4. Explore the Codex</strong>
-                <p>Select any milestone to read verified historical lore, scientific context, and academic citations.</p>
+                <strong>4. Study the Codex</strong>
+                <p>Select milestones to read verified academic history, lore, and citations.</p>
               </div>
             </div>
 
-            <div class="help-step-card help-step-full-width help-step-highlight">
+            <div class="help-step-card">
               <div class="help-step-icon">🌌</div>
               <div class="help-step-content">
-                <strong>5. Replayability & The Singularity</strong>
-                <p>Can you guide humanity through all 7 Historical Epochs? Reaching the technological frontier unlocks the <em>Paradigm Shift</em> — a mysterious rebirth mechanism that alters the fabric of history and empowers future playthroughs. What awaits beyond the final milestone?</p>
+                <strong id="help-step5-title">5. The Singularity & Beyond</strong>
+                <p id="help-step5-text">Completing all 7 Epochs opens mysterious frontier choices and replay bonuses.</p>
+              </div>
+            </div>
+
+            <div class="help-step-card">
+              <div class="help-step-icon">🌐</div>
+              <div class="help-step-content">
+                <strong id="help-step6-title">6. Language Options</strong>
+                <p id="help-step6-text">Switch between 9 supported world languages anytime via the 🌐 header menu.</p>
               </div>
             </div>
           </div>

@@ -15,6 +15,7 @@ export class GameUI {
     this.initDOMReferences();
     this.bindEvents();
     this.setupEngineSubscriptions();
+    this.loadVersion();
     
     // Initial Render
     this.renderAll();
@@ -24,12 +25,33 @@ export class GameUI {
   }
 
   // ==========================================
+  // VERSION LOADER
+  // ==========================================
+  async loadVersion() {
+    try {
+      const response = await fetch('./VERSION');
+      if (response.ok) {
+        const version = (await response.text()).trim();
+        if (version) {
+          this.engine.version = version;
+          if (this.dom.versionTag) {
+            this.dom.versionTag.textContent = `v${version}`;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load VERSION file:', err);
+    }
+  }
+
+  // ==========================================
   // DOM ELEMENT CACHING
   // ==========================================
   initDOMReferences() {
     this.dom = {
       body: document.body,
       // Header
+      versionTag: document.querySelector('.version-tag'),
       eraPillNumber: document.getElementById('era-pill-number'),
       eraPillName: document.getElementById('era-pill-name'),
       eraPillDates: document.getElementById('era-pill-dates'),

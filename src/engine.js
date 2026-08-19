@@ -5,8 +5,11 @@
 
 import { ERAS, GENERATORS, MILESTONES } from './historyData.js';
 
+export const VERSION = '1.0.0';
+
 export class GameEngine {
   constructor() {
+    this.version = VERSION;
     this.insights = 0;
     this.totalInsightsEarned = 0;
     this.currentEraId = 1;

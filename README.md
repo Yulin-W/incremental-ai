@@ -2,7 +2,7 @@
 
 An interactive educational idle/incremental game guiding players through the **evolution of Artificial Intelligence**—from ancient mechanical automata and formal syllogisms to modern foundation models and autonomous reasoning agents.
 
-👉 **[Play Incremental AI Online](https://yulin-w.github.io/incremental-ai/)**
+👉 **[Play Incremental AI Online](https://yulin-w.github.io/incremental-ai/)** • `v1.0.0`
 
 ---
 

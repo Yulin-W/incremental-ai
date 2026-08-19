@@ -1,0 +1,6 @@
+# Scratch and temporary directories
+scratch/
+tmp/
+.vscode/
+.DS_Store
+Thumbs.db

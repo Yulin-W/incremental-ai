@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "Authentische 1x Geschwindigkeit",
     "baselineSpeedLabel": "BASISGESCHWINDIGKEIT",
     "vanillaEffectsSummary": "Erleben Sie die authentische historische Fortschrittskurve ohne aktive Geschwindigkeits-Multiplikatoren.",
-    "vanillaButtonAction": "Ohne Boni wiederholen →"
+    "vanillaButtonAction": "Ohne Boni wiederholen →",
+    "prodFooterMore": "Weitere Optionen erscheinen im Spielverlauf.",
+    "prodFooterComplete": "Alle Optionen aufgedeckt.",
+    "timelineFooterMore": "Weitere Einträge erscheinen im Spielverlauf.",
+    "timelineFooterComplete": "Alle Einträge aufgedeckt."
   },
   "epochs": {
     "1": {

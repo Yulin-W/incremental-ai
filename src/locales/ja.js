@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "純粋な 1倍標準速度",
     "baselineSpeedLabel": "基準速度",
     "vanillaEffectsSummary": "パラダイム加速のない、本来の歴史的進歩曲線を体験します。",
-    "vanillaButtonAction": "バフなしでプレイ →"
+    "vanillaButtonAction": "バフなしでプレイ →",
+    "prodFooterMore": "進行に応じてさらなる項目が表示されます。",
+    "prodFooterComplete": "すべての項目が表示されました。",
+    "timelineFooterMore": "進行に応じてさらなる項目が表示されます。",
+    "timelineFooterComplete": "すべての項目が表示されました。"
   },
   "epochs": {
     "1": {

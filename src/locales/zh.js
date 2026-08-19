@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "纯正 1倍基准速度",
     "baselineSpeedLabel": "基准速度",
     "vanillaEffectsSummary": "体验纯正未受任何范式加成影响的历史演进与科技突破曲线。",
-    "vanillaButtonAction": "无增益重开 →"
+    "vanillaButtonAction": "无增益重开 →",
+    "prodFooterMore": "推进游戏将显现更多选项。",
+    "prodFooterComplete": "所有选项均已显现。",
+    "timelineFooterMore": "推进游戏将显现更多条目。",
+    "timelineFooterComplete": "所有条目均已显现。"
   },
   "epochs": {
     "1": {

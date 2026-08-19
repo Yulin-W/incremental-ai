@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "Αυθεντική Ταχύτητα 1x",
     "baselineSpeedLabel": "ΤΑΧΥΤΗΤΑ ΒΑΣΗΣ",
     "vanillaEffectsSummary": "Βιώστε την αυθεντική ιστορική καμπύλη προόδου χωρίς ενεργούς πολλαπλασιαστές ταχύτητας.",
-    "vanillaButtonAction": "Επανάληψη Χωρίς Ενισχύσεις →"
+    "vanillaButtonAction": "Επανάληψη Χωρίς Ενισχύσεις →",
+    "prodFooterMore": "Περισσότερες επιλογές εμφανίζονται καθώς προχωράτε.",
+    "prodFooterComplete": "Όλες οι επιλογές έχουν αποκαλυφθεί.",
+    "timelineFooterMore": "Περισσότερες καταχωρίσεις εμφανίζονται καθώς προχωράτε.",
+    "timelineFooterComplete": "Όλες οι καταχωρίσεις έχουν αποκαλυφθεί."
   },
   "epochs": {
     "1": {

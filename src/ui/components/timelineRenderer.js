@@ -65,6 +65,18 @@ export function renderTimeline(ui) {
 
     ui.dom.milestoneGrid.appendChild(card);
   });
+
+  renderTimelineFooter(ui);
+}
+
+export function renderTimelineFooter(ui) {
+  if (!ui.dom.timelineFooter) return;
+  const hasMore = ui.engine.currentEraId < 7;
+  if (hasMore) {
+    ui.dom.timelineFooter.innerHTML = `<span class="footer-icon">⏳</span><span class="footer-msg">${i18n.t('ui.timelineFooterMore')}</span>`;
+  } else {
+    ui.dom.timelineFooter.innerHTML = `<span class="footer-icon">✨</span><span class="footer-msg">${i18n.t('ui.timelineFooterComplete')}</span>`;
+  }
 }
 
 export function updateMilestoneAffordances(ui) {

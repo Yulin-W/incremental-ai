@@ -68,6 +68,18 @@ export function renderGenerators(ui) {
 
     ui.dom.generatorList.appendChild(card);
   });
+
+  renderProductionFooter(ui);
+}
+
+export function renderProductionFooter(ui) {
+  if (!ui.dom.productionFooter) return;
+  const hasMore = ui.engine.currentEraId < 7;
+  if (hasMore) {
+    ui.dom.productionFooter.innerHTML = `<span class="footer-icon">🔒</span><span class="footer-msg">${i18n.t('ui.prodFooterMore')}</span>`;
+  } else {
+    ui.dom.productionFooter.innerHTML = `<span class="footer-icon">✨</span><span class="footer-msg">${i18n.t('ui.prodFooterComplete')}</span>`;
+  }
 }
 
 export function updateGeneratorAffordances(ui) {

@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "Vitesse Authentique 1x",
     "baselineSpeedLabel": "VITESSE DE BASE",
     "vanillaEffectsSummary": "Vivez la courbe de progression historique authentique sans multiplicateurs de vitesse ni bonus de paradigme actifs.",
-    "vanillaButtonAction": "Rejouer Sans Bonus →"
+    "vanillaButtonAction": "Rejouer Sans Bonus →",
+    "prodFooterMore": "Plus d'options apparaissent en progressant.",
+    "prodFooterComplete": "Toutes les options sont révélées.",
+    "timelineFooterMore": "Plus d'entrées apparaissent en progressant.",
+    "timelineFooterComplete": "Toutes les entrées sont révélées."
   },
   "epochs": {
     "1": {

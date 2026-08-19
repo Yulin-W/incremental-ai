@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "정통 1배속",
     "baselineSpeedLabel": "기본 속도",
     "vanillaEffectsSummary": "패러다임 가속 없이 본래의 역사적 진보 곡선을 체험합니다.",
-    "vanillaButtonAction": "버프 없이 다시 플레이 →"
+    "vanillaButtonAction": "버프 없이 다시 플레이 →",
+    "prodFooterMore": "진행도에 따라 추가 항목이 표시됩니다.",
+    "prodFooterComplete": "모든 항목이 표시되었습니다.",
+    "timelineFooterMore": "진행도에 따라 추가 항목이 표시됩니다.",
+    "timelineFooterComplete": "모든 항목이 표시되었습니다."
   },
   "epochs": {
     "1": {

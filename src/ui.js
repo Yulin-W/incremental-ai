@@ -195,10 +195,12 @@ export class GameUI {
       bulkLabel: document.querySelector('.bulk-label'),
       bulkButtons: document.querySelectorAll('.btn-bulk'),
       generatorList: document.getElementById('generator-list'),
+      productionFooter: document.getElementById('production-footer'),
 
       // Center Panel (Timeline)
       panelTimelineTitle: document.getElementById('panel-timeline-title') || document.querySelector('#panel-timeline .panel-title'),
       milestoneGrid: document.getElementById('milestone-grid'),
+      timelineFooter: document.getElementById('timeline-footer'),
 
       // Right Panel (Codex)
       panelCodexTitle: document.getElementById('panel-codex-title') || document.querySelector('#panel-codex .panel-title'),

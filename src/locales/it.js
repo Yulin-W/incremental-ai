@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "Velocità Autentica 1x",
     "baselineSpeedLabel": "VELOCITÀ DI BASE",
     "vanillaEffectsSummary": "Vivi l'autentica curva di progressione storica senza moltiplicatori di velocità o bonus di paradigma attivi.",
-    "vanillaButtonAction": "Rigioca Senza Bonus →"
+    "vanillaButtonAction": "Rigioca Senza Bonus →",
+    "prodFooterMore": "Altre opzioni appariranno avanzando.",
+    "prodFooterComplete": "Tutte le opzioni sono rivelate.",
+    "timelineFooterMore": "Altre voci appariranno avanzando.",
+    "timelineFooterComplete": "Tutte le voci sono rivelate."
   },
   "epochs": {
     "1": {

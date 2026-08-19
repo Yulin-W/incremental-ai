@@ -662,46 +662,26 @@ button,
 .panel-footer {
   background: var(--bg-surface-elevated);
   border-top: 1px solid var(--border-color);
-  padding: 0.75rem 1rem;
-  font-size: 0.78rem;
-  flex-shrink: 0;
-}
-
-.panel-footer-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.65rem;
-}
-
-.footer-icon {
-  font-size: 1.1rem;
-  line-height: 1.2;
-  flex-shrink: 0;
-  margin-top: 0.05rem;
-}
-
-.footer-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  line-height: 1.35;
-}
-
-.footer-title {
-  font-weight: 700;
-  color: var(--accent-primary);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.footer-desc {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
-  font-size: 0.74rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  line-height: 1.2;
 }
 
-.footer-desc strong {
-  color: var(--text-main);
+.panel-footer .footer-icon {
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.panel-footer .footer-msg {
+  font-style: italic;
+  letter-spacing: 0.01em;
 }
 
 /* ==========================================================================

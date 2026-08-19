@@ -131,7 +131,11 @@ export default {
     "vanillaSpeed": "Authentic 1x Speed",
     "baselineSpeedLabel": "BASELINE SPEED",
     "vanillaEffectsSummary": "Experience the authentic, unassisted historical progression curve without any active paradigm speed multipliers or bonuses.",
-    "vanillaButtonAction": "Replay Without Buffs →"
+    "vanillaButtonAction": "Replay Without Buffs →",
+    "prodFooterMore": "More options appear as you progress.",
+    "prodFooterComplete": "All options revealed.",
+    "timelineFooterMore": "More entries appear as you progress.",
+    "timelineFooterComplete": "All entries revealed."
   },
   "epochs": {
     "1": {

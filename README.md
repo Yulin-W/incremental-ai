@@ -41,8 +41,3 @@ An interactive educational idle/incremental game guiding players through the **e
 ## 📜 Intellectual Property & Fair Use
 
 All historical milestones, paper references, and scientific concepts in this educational project are presented for academic, pedagogical, and nominative fair-use purposes. All UI components, styling, and graphics are original open-source assets.
-
----
-
-## 📄 License
-MIT License. Open for educational and non-commercial learning.

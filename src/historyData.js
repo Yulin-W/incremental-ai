@@ -4,13 +4,13 @@
  * Contains 7 historical epochs, 21 research generators, and 28 landmark milestones.
  */
 
-export const ERAS = [
+export const EPOCHS = [
   {
     id: 1,
     name: "Antiquity & Mechanical Automata",
     subtitle: "The Philosophical & Mechanical Roots of Artificial Life",
     timeSpan: "Prehistory – 1500s",
-    themeClass: "theme-era-1",
+    themeClass: "theme-epoch-1",
     unlockThreshold: 0,
     flavor: "In ancient academies and workshops, thinkers dream of mechanical beings and formalise the first laws of syllogistic deduction."
   },
@@ -19,7 +19,7 @@ export const ERAS = [
     name: "Formal Logic & Mechanical Calculators",
     subtitle: "The Mechanization of Arithmetic and Symbolic Computation",
     timeSpan: "1600s – 1800s",
-    themeClass: "theme-era-2",
+    themeClass: "theme-epoch-2",
     unlockThreshold: 5000,
     flavor: "The Enlightenment brings geared arithmetic machines, binary logic, and the profound realization that thought can be computed."
   },
@@ -28,7 +28,7 @@ export const ERAS = [
     name: "Birth of Computing & Cybernetics",
     subtitle: "Electronic Brains, Biological Neurons & Theoretical Limits",
     timeSpan: "1930s – 1950s",
-    themeClass: "theme-era-3",
+    themeClass: "theme-epoch-3",
     unlockThreshold: 150000,
     flavor: "Vacuum tubes, universal computing theory, and biological neural models converge to formally christen 'Artificial Intelligence' at Dartmouth."
   },
@@ -37,7 +37,7 @@ export const ERAS = [
     name: "Symbolic AI & Knowledge Systems",
     subtitle: "Heuristic Search, Expert Rules & The First AI Winters",
     timeSpan: "1960s – 1980s",
-    themeClass: "theme-era-4",
+    themeClass: "theme-epoch-4",
     unlockThreshold: 5000000,
     flavor: "Good Old-Fashioned AI attempts to encode human knowledge into explicit IF-THEN rules, discovering the brittle limits of hand-crafted logic."
   },
@@ -46,7 +46,7 @@ export const ERAS = [
     name: "Statistical Learning & Neural Resurgence",
     subtitle: "From Deductive Rules to Inductive Data-Driven Learning",
     timeSpan: "1990s – 2000s",
-    themeClass: "theme-era-5",
+    themeClass: "theme-epoch-5",
     unlockThreshold: 200000000,
     flavor: "Backpropagation, support vector machines, and massive competitive datasets shift AI from top-down rules to bottom-up statistical patterns."
   },
@@ -55,7 +55,7 @@ export const ERAS = [
     name: "Deep Learning & Transformers",
     subtitle: "GPU Acceleration, Deep Representations & Scaled Self-Attention",
     timeSpan: "2010s – 2020",
-    themeClass: "theme-era-6",
+    themeClass: "theme-epoch-6",
     unlockThreshold: 10000000000,
     flavor: "Massive neural networks trained on parallel GPUs shatter vision and game records, culminating in the ubiquitous Transformer self-attention architecture."
   },
@@ -64,17 +64,20 @@ export const ERAS = [
     name: "Autonomous Agents & Frontier Models",
     subtitle: "Deliberative Reasoning, Tool-Use & Multi-Agent Swarms",
     timeSpan: "2020s – Present",
-    themeClass: "theme-era-7",
+    themeClass: "theme-epoch-7",
     unlockThreshold: 500000000000,
     flavor: "Foundation models acquire chain-of-thought reflection, multimodal grounding, and autonomous tool-augmented problem-solving agency."
   }
 ];
 
+export const ERAS = EPOCHS; // Backward compatibility alias
+
 export const GENERATORS = [
-  // ERA 1
+  // EPOCH 1
   {
     id: "gen_scribe",
     eraId: 1,
+    epochId: 1,
     name: "Scholastic Scribe",
     icon: "📜",
     baseCost: 15,
@@ -84,6 +87,7 @@ export const GENERATORS = [
   {
     id: "gen_water_clock",
     eraId: 1,
+    epochId: 1,
     name: "Clepsydra & Cam Mechanism",
     icon: "💧",
     baseCost: 100,
@@ -93,6 +97,7 @@ export const GENERATORS = [
   {
     id: "gen_combinatorial_wheel",
     eraId: 1,
+    epochId: 1,
     name: "Llullian Volvelle",
     icon: "⚙️",
     baseCost: 650,
@@ -100,10 +105,11 @@ export const GENERATORS = [
     description: "Rotating concentric parchment discs that systematically combine concepts."
   },
 
-  // ERA 2
+  // EPOCH 2
   {
     id: "gen_step_reckoner",
     eraId: 2,
+    epochId: 2,
     name: "Stepped Drum Calculator",
     icon: "🔢",
     baseCost: 3500,
@@ -113,6 +119,7 @@ export const GENERATORS = [
   {
     id: "gen_punched_loom",
     eraId: 2,
+    epochId: 2,
     name: "Punched-Card Mechanism",
     icon: "🎴",
     baseCost: 20000,
@@ -122,6 +129,7 @@ export const GENERATORS = [
   {
     id: "gen_difference_engine",
     eraId: 2,
+    epochId: 2,
     name: "Babbage Difference Engine",
     icon: "🏛️",
     baseCost: 120000,
@@ -129,10 +137,11 @@ export const GENERATORS = [
     description: "A multi-ton clockwork apparatus tabulating polynomial functions automatically."
   },
 
-  // ERA 3
+  // EPOCH 3
   {
     id: "gen_relay_computer",
     eraId: 3,
+    epochId: 3,
     name: "Electromechanical Relay Array",
     icon: "🔌",
     baseCost: 750000,
@@ -142,6 +151,7 @@ export const GENERATORS = [
   {
     id: "gen_vacuum_tube",
     eraId: 3,
+    epochId: 3,
     name: "Thermionic Vacuum Tube Bank",
     icon: "💡",
     baseCost: 4500000,
@@ -151,6 +161,7 @@ export const GENERATORS = [
   {
     id: "gen_enigma_decryptor",
     eraId: 3,
+    epochId: 3,
     name: "Turing Bombe Decryptor",
     icon: "📻",
     baseCost: 28000000,
@@ -158,10 +169,11 @@ export const GENERATORS = [
     description: "Specialized parallel electromechanical search engine eliminating cryptographic contradictions."
   },
 
-  // ERA 4
+  // EPOCH 4
   {
     id: "gen_lisp_machine",
     eraId: 4,
+    epochId: 4,
     name: "LISP Symbolic Workstation",
     icon: "🖥️",
     baseCost: 180000000,
@@ -171,6 +183,7 @@ export const GENERATORS = [
   {
     id: "gen_rule_engine",
     eraId: 4,
+    epochId: 4,
     name: "Production Rule Engine",
     icon: "📑",
     baseCost: 1100000000,
@@ -180,6 +193,7 @@ export const GENERATORS = [
   {
     id: "gen_heuristic_searcher",
     eraId: 4,
+    epochId: 4,
     name: "Minimax Alpha-Beta Searcher",
     icon: "🌲",
     baseCost: 7000000000,
@@ -187,10 +201,11 @@ export const GENERATORS = [
     description: "Explores deep decision trees by pruning unpromising branches with heuristic scores."
   },
 
-  // ERA 5
+  // EPOCH 5
   {
     id: "gen_backprop_rig",
     eraId: 5,
+    epochId: 5,
     name: "Backpropagation Gradient Rig",
     icon: "📈",
     baseCost: 45000000000,
@@ -200,6 +215,7 @@ export const GENERATORS = [
   {
     id: "gen_svm_kernel",
     eraId: 5,
+    epochId: 5,
     name: "Support Vector Kernel Cluster",
     icon: "📐",
     baseCost: 300000000000,
@@ -209,6 +225,7 @@ export const GENERATORS = [
   {
     id: "gen_gpu_matrix_farm",
     eraId: 5,
+    epochId: 5,
     name: "Parallel Matrix GPU Farm",
     icon: "🖲️",
     baseCost: 2000000000000,
@@ -216,10 +233,11 @@ export const GENERATORS = [
     description: "Commercial graphics hardware repurposed for massive parallel floating-point matrix multiplication."
   },
 
-  // ERA 6
+  // EPOCH 6
   {
     id: "gen_tpu_pod",
     eraId: 6,
+    epochId: 6,
     name: "Tensor Acceleration Pod",
     icon: "🧊",
     baseCost: 15000000000000,
@@ -229,6 +247,7 @@ export const GENERATORS = [
   {
     id: "gen_attention_head",
     eraId: 6,
+    epochId: 6,
     name: "Multi-Head Attention Cluster",
     icon: "✨",
     baseCost: 100000000000000,
@@ -238,6 +257,7 @@ export const GENERATORS = [
   {
     id: "gen_pretrain_supercluster",
     eraId: 6,
+    epochId: 6,
     name: "Exascale Pretraining Supercluster",
     icon: "🌐",
     baseCost: 750000000000000,
@@ -245,10 +265,11 @@ export const GENERATORS = [
     description: "Thousands of interconnected accelerators digesting trillions of multimodal web tokens."
   },
 
-  // ERA 7
+  // EPOCH 7
   {
     id: "gen_reasoning_loop",
     eraId: 7,
+    epochId: 7,
     name: "Deliberative Reasoning Engine",
     icon: "🔍",
     baseCost: 6000000000000000,
@@ -258,6 +279,7 @@ export const GENERATORS = [
   {
     id: "gen_agent_swarm",
     eraId: 7,
+    epochId: 7,
     name: "Tool-Augmented Agent Swarm",
     icon: "🤖",
     baseCost: 50000000000000000,
@@ -267,6 +289,7 @@ export const GENERATORS = [
   {
     id: "gen_frontier_foundation",
     eraId: 7,
+    epochId: 7,
     name: "Autonomous Frontier Synthesis Core",
     icon: "🌌",
     baseCost: 400000000000000000,
@@ -276,10 +299,11 @@ export const GENERATORS = [
 ];
 
 export const MILESTONES = [
-  // ERA 1 BREAKTHROUGHS
+  // EPOCH 1 BREAKTHROUGHS
   {
     id: "ms_talos",
     eraId: 1,
+    epochId: 1,
     title: "Myth of Talos & Automata",
     year: "c. 750 BCE",
     cost: 50,
@@ -296,6 +320,7 @@ export const MILESTONES = [
   {
     id: "ms_aristotle_logic",
     eraId: 1,
+    epochId: 1,
     title: "Aristotelian Syllogisms",
     year: "c. 350 BCE",
     cost: 250,
@@ -312,6 +337,7 @@ export const MILESTONES = [
   {
     id: "ms_heron_automata",
     eraId: 1,
+    epochId: 1,
     title: "Heron's Programmable Theatres",
     year: "c. 60 CE",
     cost: 1200,
@@ -328,6 +354,7 @@ export const MILESTONES = [
   {
     id: "ms_llull_ars_magna",
     eraId: 1,
+    epochId: 1,
     title: "Ramon Llull's Ars Magna",
     year: "1305",
     cost: 4000,
@@ -338,14 +365,15 @@ export const MILESTONES = [
     citation: "Ramon Llull, Ars Magna Generalis et Ultima (1305)",
     effects: {
       globalMultiplier: 2.0,
-      description: "Doubles all Insight production across Era 1."
+      description: "Doubles all Insight production across Epoch 1."
     }
   },
 
-  // ERA 2 BREAKTHROUGHS
+  // EPOCH 2 BREAKTHROUGHS
   {
     id: "ms_pascaline",
     eraId: 2,
+    epochId: 2,
     title: "Pascal's Mechanical Calculator",
     year: "1642",
     cost: 12000,
@@ -363,6 +391,7 @@ export const MILESTONES = [
   {
     id: "ms_leibniz_calculus",
     eraId: 2,
+    epochId: 2,
     title: "Leibniz's Calculus Ratiocinator",
     year: "1679",
     cost: 65000,
@@ -379,6 +408,7 @@ export const MILESTONES = [
   {
     id: "ms_analytical_engine",
     eraId: 2,
+    epochId: 2,
     title: "Babbage's Analytical Engine",
     year: "1837",
     cost: 250000,
@@ -395,6 +425,7 @@ export const MILESTONES = [
   {
     id: "ms_lovelace_algorithm",
     eraId: 2,
+    epochId: 2,
     title: "Ada Lovelace's Note G Algorithm",
     year: "1843",
     cost: 1000000,
@@ -410,10 +441,11 @@ export const MILESTONES = [
     }
   },
 
-  // ERA 3 BREAKTHROUGHS
+  // EPOCH 3 BREAKTHROUGHS
   {
     id: "ms_turing_machine",
     eraId: 3,
+    epochId: 3,
     title: "Universal Turing Machine",
     year: "1936",
     cost: 3500000,
@@ -431,6 +463,7 @@ export const MILESTONES = [
   {
     id: "ms_mcculloch_pitts",
     eraId: 3,
+    epochId: 3,
     title: "McCulloch-Pitts Artificial Neuron",
     year: "1943",
     cost: 15000000,
@@ -447,6 +480,7 @@ export const MILESTONES = [
   {
     id: "ms_turing_test",
     eraId: 3,
+    epochId: 3,
     title: "The Imitation Game (Turing Test)",
     year: "1950",
     cost: 60000000,
@@ -463,6 +497,7 @@ export const MILESTONES = [
   {
     id: "ms_dartmouth_1956",
     eraId: 3,
+    epochId: 3,
     title: "Dartmouth Summer Research Workshop",
     year: "1956",
     cost: 250000000,
@@ -477,10 +512,11 @@ export const MILESTONES = [
     }
   },
 
-  // ERA 4 BREAKTHROUGHS
+  // EPOCH 4 BREAKTHROUGHS
   {
     id: "ms_logic_theorist",
     eraId: 4,
+    epochId: 4,
     title: "Logic Theorist & Heuristic Search",
     year: "1956",
     cost: 800000000,
@@ -497,6 +533,7 @@ export const MILESTONES = [
   {
     id: "ms_eliza",
     eraId: 4,
+    epochId: 4,
     title: "ELIZA Natural Language System",
     year: "1966",
     cost: 3000000000,
@@ -513,6 +550,7 @@ export const MILESTONES = [
   {
     id: "ms_expert_systems",
     eraId: 4,
+    epochId: 4,
     title: "Expert Systems & Knowledge Engineering",
     year: "1975",
     cost: 15000000000,
@@ -529,6 +567,7 @@ export const MILESTONES = [
   {
     id: "ms_ai_winter_survival",
     eraId: 4,
+    epochId: 4,
     title: "Navigating the First AI Winter",
     year: "1980s",
     cost: 75000000000,
@@ -543,10 +582,11 @@ export const MILESTONES = [
     }
   },
 
-  // ERA 5 BREAKTHROUGHS
+  // EPOCH 5 BREAKTHROUGHS
   {
     id: "ms_backprop_revival",
     eraId: 5,
+    epochId: 5,
     title: "Backpropagation Rediscovery",
     year: "1986",
     cost: 250000000000,
@@ -564,6 +604,7 @@ export const MILESTONES = [
   {
     id: "ms_support_vector_machines",
     eraId: 5,
+    epochId: 5,
     title: "Support Vector Machines & Kernel Trick",
     year: "1995",
     cost: 1000000000000,
@@ -580,6 +621,7 @@ export const MILESTONES = [
   {
     id: "ms_deep_blue",
     eraId: 5,
+    epochId: 5,
     title: "Heuristic Search Mastery (1997)",
     year: "1997",
     cost: 4500000000000,
@@ -596,6 +638,7 @@ export const MILESTONES = [
   {
     id: "ms_imagenet_inception",
     eraId: 5,
+    epochId: 5,
     title: "ImageNet & Open Benchmark Culture",
     year: "2009",
     cost: 20000000000000,
@@ -610,10 +653,11 @@ export const MILESTONES = [
     }
   },
 
-  // ERA 6 BREAKTHROUGHS
+  // EPOCH 6 BREAKTHROUGHS
   {
     id: "ms_alexnet",
     eraId: 6,
+    epochId: 6,
     title: "AlexNet & GPU Deep Learning",
     year: "2012",
     cost: 75000000000000,
@@ -630,6 +674,7 @@ export const MILESTONES = [
   {
     id: "ms_dqn_atari",
     eraId: 6,
+    epochId: 6,
     title: "Deep Q-Networks (DQN)",
     year: "2015",
     cost: 300000000000000,
@@ -646,6 +691,7 @@ export const MILESTONES = [
   {
     id: "ms_alphago",
     eraId: 6,
+    epochId: 6,
     title: "AlphaGo & Intuitive Monte Carlo Search",
     year: "2016",
     cost: 1500000000000000,
@@ -662,6 +708,7 @@ export const MILESTONES = [
   {
     id: "ms_transformer_attention",
     eraId: 6,
+    epochId: 6,
     title: "Transformer Architecture (Attention Is All You Need)",
     year: "2017",
     cost: 8000000000000000,
@@ -677,10 +724,11 @@ export const MILESTONES = [
     }
   },
 
-  // ERA 7 BREAKTHROUGHS
+  // EPOCH 7 BREAKTHROUGHS
   {
     id: "ms_rlhf_alignment",
     eraId: 7,
+    epochId: 7,
     title: "Instruction Tuning & RLHF Alignment",
     year: "2022",
     cost: 40000000000000000,
@@ -697,6 +745,7 @@ export const MILESTONES = [
   {
     id: "ms_chain_of_thought",
     eraId: 7,
+    epochId: 7,
     title: "Chain-of-Thought & Test-Time Compute",
     year: "2022–2024",
     cost: 200000000000000000,
@@ -713,6 +762,7 @@ export const MILESTONES = [
   {
     id: "ms_tool_augmented_mcp",
     eraId: 7,
+    epochId: 7,
     title: "Tool Augmentation & Model Context Protocols",
     year: "2023–2024",
     cost: 1000000000000000000,
@@ -730,6 +780,7 @@ export const MILESTONES = [
   {
     id: "ms_autonomous_agent_swarms",
     eraId: 7,
+    epochId: 7,
     title: "Autonomous Multi-Agent Orchestration",
     year: "2024–Present",
     cost: 5000000000000000000,
@@ -740,7 +791,124 @@ export const MILESTONES = [
     citation: "Wang, G. et al. (2023). Voyager: An Open-Ended Embodied Agent with Large Language Models. arXiv:2305.16291.",
     effects: {
       globalMultiplier: 5.0,
-      description: "Global Insight production multiplied by 5x! Era 7 Singularity achieved!"
+      description: "Global Insight production multiplied by 5x! Epoch 7 Singularity achieved!"
     }
   }
 ];
+
+export const EPOCH_EVENTS = {
+  1: {
+    id: "epoch_1_event",
+    epochId: 1,
+    eraId: 1,
+    category: "Historical Epoch Advancement",
+    epochNumber: 1,
+    title: "Epoch 1: Antiquity & Mechanical Automata",
+    subtitle: "The Philosophical & Mechanical Roots of Artificial Life (Prehistory – 1500s)",
+    icon: "📜",
+    narrative: "In ancient workshops and classical academies, humanity first dreams of artificial autonomy. From the bronze guardian Talos crafted by Hephaestus to Heron of Alexandria's programmable puppet theatres and Ramon Llull's combinatorial paper wheels, the foundational intuition takes root: physical matter and formal symbols can be orchestrated to imitate reason.",
+    quote: {
+      text: "For if every instrument could accomplish its own work, obeying or anticipating the will of others... chief-workmen would not want assistants, nor masters slaves.",
+      author: "Aristotle, Politics (c. 350 BCE)"
+    },
+    buttonText: "Forge the first automata of reason! →"
+  },
+  2: {
+    id: "epoch_2_event",
+    epochId: 2,
+    eraId: 2,
+    category: "Historical Epoch Advancement",
+    epochNumber: 2,
+    title: "Epoch 2: Formal Logic & Mechanical Calculators",
+    subtitle: "The Mechanization of Arithmetic and Symbolic Computation (1600s – 1800s)",
+    icon: "⚙️",
+    narrative: "The Enlightenment dawns with a revolution in mechanical calculation. Blaise Pascal crafts geared arithmetic boxes to tally taxes, while Gottfried Wilhelm Leibniz develops binary arithmetic and dreams of a universal calculus to resolve human debate. Charles Babbage and Ada Lovelace conceive the first general-purpose stored-program computer—realizing that machines can process not just numbers, but arbitrary symbols and melodies.",
+    quote: {
+      text: "When a dispute arises, there will be no more need for disputation between two philosophers than between two accountants. It will be enough for them to take their pens in hand and say: Calculemus!",
+      author: "Gottfried Wilhelm Leibniz, De Arte Combinatoria (1679)"
+    },
+    buttonText: "Calculemus! Let us calculate. →"
+  },
+  3: {
+    id: "epoch_3_event",
+    epochId: 3,
+    eraId: 3,
+    category: "Historical Epoch Advancement",
+    epochNumber: 3,
+    title: "Epoch 3: Birth of Computing & Cybernetics",
+    subtitle: "Electronic Brains, Biological Neurons & Theoretical Limits (1930s – 1950s)",
+    icon: "💡",
+    narrative: "Amidst theoretical mathematics and wartime cryptographic breakthroughs, Alan Turing defines universal computability and breaks ciphers with parallel electromechanical Bombes. Warren McCulloch and Walter Pitts prove that interconnected binary neurons compute arbitrary logical propositions. In 1956, a visionary summer workshop at Dartmouth College coins an audacious new discipline: Artificial Intelligence.",
+    quote: {
+      text: "We may hope that machines will eventually compete with men in all purely intellectual fields... Can machines think?",
+      author: "Alan Turing, Computing Machinery and Intelligence (1950)"
+    },
+    buttonText: "The electronic brain awakens. Onward! →"
+  },
+  4: {
+    id: "epoch_4_event",
+    epochId: 4,
+    eraId: 4,
+    category: "Historical Epoch Advancement",
+    epochNumber: 4,
+    title: "Epoch 4: Symbolic AI & Knowledge Systems",
+    subtitle: "Heuristic Search, Expert Rules & The First AI Winters (1960s – 1980s)",
+    icon: "🖥️",
+    narrative: "The golden age of Good Old-Fashioned AI (GOFAI) seeks to conquer cognition through explicit symbolic manipulation. Researchers construct heuristic search engines like Logic Theorist, chatbot illusions like ELIZA, and industrial Expert Systems powered by thousands of IF-THEN production rules. Yet as hand-crafted heuristics collide with real-world ambiguity, research funding freezes in the cold crucible of the AI Winter.",
+    quote: {
+      text: "The question of whether a computer can think is no more interesting than the question of whether a submarine can swim.",
+      author: "Edsger W. Dijkstra (1984)"
+    },
+    buttonText: "Codify the rules of human expertise. →"
+  },
+  5: {
+    id: "epoch_5_event",
+    epochId: 5,
+    eraId: 5,
+    category: "Historical Epoch Advancement",
+    epochNumber: 5,
+    title: "Epoch 5: Statistical Learning & Neural Resurgence",
+    subtitle: "From Deductive Rules to Inductive Data-Driven Learning (1990s – 2000s)",
+    icon: "📈",
+    narrative: "AI undergoes a profound paradigm shift: abandoning rigid top-down rules in favor of bottom-up statistical induction. The backpropagation algorithm solves credit assignment across multi-layer neural networks, Support Vector Machines achieve convex maximum-margin bounds, and IBM's Deep Blue defeats Garry Kasparov. Fei-Fei Li's ImageNet establishes massive benchmark datasets as the true fuel of machine intelligence.",
+    quote: {
+      text: "A breakthrough in machine learning would be worth ten Microsofts.",
+      author: "Bill Gates, Speech at University of Washington (2004)"
+    },
+    buttonText: "Let the gradients descend! →"
+  },
+  6: {
+    id: "epoch_6_event",
+    epochId: 6,
+    eraId: 6,
+    category: "Historical Epoch Advancement",
+    epochNumber: 6,
+    title: "Epoch 6: Deep Learning & Transformers",
+    subtitle: "GPU Acceleration, Deep Representations & Scaled Self-Attention (2010s – 2020)",
+    icon: "✨",
+    narrative: "The convergence of GPU parallel compute, massive internet datasets, and deep convolutional networks ignites the modern AI explosion. AlexNet shatters computer vision records, DeepMind's AlphaGo masters an intuitive ancient game with 10^170 states, and the landmark paper 'Attention Is All You Need' replaces sequential recurrence with parallel multi-head self-attention, establishing the unified foundation for modern generative intelligence.",
+    quote: {
+      text: "Deep Learning is going to be able to do everything.",
+      author: "Geoffrey Hinton, Turing Award Laureate"
+    },
+    buttonText: "Attention is all we need. Scale up! →"
+  },
+  7: {
+    id: "epoch_7_event",
+    epochId: 7,
+    eraId: 7,
+    category: "Historical Epoch Advancement",
+    epochNumber: 7,
+    title: "Epoch 7: Autonomous Agents & Frontier Models",
+    subtitle: "Deliberative Reasoning, Tool-Use & Multi-Agent Swarms (2020s – Present)",
+    icon: "🤖",
+    narrative: "Foundation models transcend passive text completion through reinforcement learning from human feedback (RLHF), chain-of-thought test-time compute, and dynamic tool orchestration. Collaborative autonomous multi-agent networks operate compilers, terminal shells, and scientific workflows—bridging probabilistic intuition with deterministic verification at the dawn of synthetic discovery.",
+    quote: {
+      text: "The ultimate goal of AI is not merely to predict the next token, but to reason, act, discover, and collaborate autonomously.",
+      author: "Frontier AI Systems Architecture (2024)"
+    },
+    buttonText: "Step-by-step into the frontier singularity! 🚀"
+  }
+};
+
+export const ERA_EVENTS = EPOCH_EVENTS; // Backward compatibility alias

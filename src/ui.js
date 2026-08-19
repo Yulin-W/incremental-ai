@@ -4,19 +4,26 @@
  */
 
 import { GameEngine } from './engine.js';
-import { ERAS, GENERATORS, MILESTONES } from './historyData.js';
+import { ERAS, GENERATORS, MILESTONES, ERA_EVENTS } from './historyData.js';
 
 export class GameUI {
   constructor() {
     this.engine = new GameEngine();
     this.activeMobileTab = 'production'; // 'production', 'timeline', 'codex'
     this.dom = {};
+    this.eventQueue = [];
+    this.isEventModalOpen = false;
 
     this.initDOMReferences();
     this.bindEvents();
     this.setupEngineSubscriptions();
     this.loadVersion();
     
+    // Expose instance for testing / harness access
+    if (typeof window !== 'undefined') {
+      window.gameUI = this;
+    }
+
     // Initialize Local-Only Debug Mode if enabled
     this.isDebugMode = GameUI.isDebugModeActive();
     if (this.isDebugMode) {
@@ -92,6 +99,20 @@ export class GameUI {
       helpModal: document.getElementById('help-modal'),
       btnCloseHelp: document.getElementById('btn-close-help'),
       btnStartPlaying: document.getElementById('btn-start-playing'),
+
+      // Paradox-Style Historical Event Modal Dialog
+      eventModal: document.getElementById('event-modal'),
+      eventModalCategory: document.getElementById('event-modal-category'),
+      eventModalEpochPill: document.getElementById('event-modal-epoch-pill'),
+      eventModalIcon: document.getElementById('event-modal-icon'),
+      eventModalTitle: document.getElementById('event-modal-title'),
+      eventModalSubtitle: document.getElementById('event-modal-subtitle'),
+      eventModalNarrative: document.getElementById('event-modal-narrative'),
+      eventModalQuoteText: document.getElementById('event-modal-quote-text'),
+      eventModalQuoteAuthor: document.getElementById('event-modal-quote-author'),
+      eventModalBtnText: document.getElementById('event-modal-btn-text'),
+      btnEventAcknowledge: document.getElementById('btn-event-acknowledge'),
+      btnCloseEvent: document.getElementById('btn-close-event'),
 
       // Toast Container
       toastContainer: document.getElementById('toast-container')
@@ -240,8 +261,34 @@ export class GameUI {
       });
     }
 
-    // Dismiss Help Modal on Escape key
+    // Historical Event Modal Controls
+    if (this.dom.btnEventAcknowledge) {
+      this.dom.btnEventAcknowledge.addEventListener('click', () => this.closeEventModal());
+    }
+    if (this.dom.btnCloseEvent) {
+      this.dom.btnCloseEvent.addEventListener('click', () => this.closeEventModal());
+    }
+    if (this.dom.eventModal) {
+      this.dom.eventModal.addEventListener('click', (e) => {
+        if (e.target === this.dom.eventModal) {
+          this.closeEventModal();
+        }
+      });
+    }
+
+    // Global Keydown Handler for Modals
     window.addEventListener('keydown', (e) => {
+      // Prioritize active Event Modal
+      if (this.dom.eventModal && this.dom.eventModal.classList.contains('active')) {
+        if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+          if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+          if (e.key === ' ') e.preventDefault();
+          this.closeEventModal();
+          return;
+        }
+      }
+
+      // Help Modal Dismissal
       if (e.key === 'Escape' && this.dom.helpModal && this.dom.helpModal.classList.contains('active')) {
         this.closeHelpModal();
       }
@@ -267,6 +314,81 @@ export class GameUI {
     setTimeout(() => {
       if (!this.dom.helpModal.classList.contains('active')) {
         this.dom.helpModal.style.display = 'none';
+      }
+    }, 250);
+  }
+
+  // ==========================================
+  // PARADOX-STYLE EVENT POPUP CONTROLLER
+  // ==========================================
+  triggerEventPopup(eventData) {
+    if (!eventData) return;
+    this.eventQueue.push(eventData);
+    if (!this.isEventModalOpen) {
+      this.showNextEvent();
+    }
+  }
+
+  showNextEvent() {
+    if (this.eventQueue.length === 0) {
+      this.isEventModalOpen = false;
+      return;
+    }
+
+    const event = this.eventQueue.shift();
+    this.isEventModalOpen = true;
+
+    if (this.dom.eventModalCategory) {
+      this.dom.eventModalCategory.textContent = event.category || "🏛️ NEW EPOCH REACHED";
+    }
+    if (this.dom.eventModalEpochPill) {
+      this.dom.eventModalEpochPill.textContent = `Epoch ${event.epochNumber || event.epochId || event.eraId || 1}`;
+    }
+    if (this.dom.eventModalIcon) {
+      this.dom.eventModalIcon.textContent = event.icon || "📜";
+    }
+    if (this.dom.eventModalTitle) {
+      const epochNum = event.epochNumber || event.epochId || event.eraId || 1;
+      this.dom.eventModalTitle.textContent = event.title.startsWith("Epoch") 
+        ? event.title 
+        : `Epoch ${epochNum}: ${event.title}`;
+    }
+    if (this.dom.eventModalSubtitle) {
+      this.dom.eventModalSubtitle.textContent = event.subtitle || "";
+    }
+    if (this.dom.eventModalNarrative) {
+      this.dom.eventModalNarrative.textContent = event.narrative || "";
+    }
+    if (this.dom.eventModalQuoteText) {
+      this.dom.eventModalQuoteText.textContent = event.quote ? event.quote.text : "";
+    }
+    if (this.dom.eventModalQuoteAuthor) {
+      this.dom.eventModalQuoteAuthor.textContent = event.quote ? `— ${event.quote.author}` : "";
+    }
+
+    if (this.dom.eventModalBtnText) {
+      this.dom.eventModalBtnText.textContent = event.buttonText || "Acknowledge & Proceed →";
+    }
+
+    if (this.dom.eventModal) {
+      this.dom.eventModal.style.display = "flex";
+      void this.dom.eventModal.offsetHeight;
+      this.dom.eventModal.classList.add("active");
+      this.dom.eventModal.setAttribute("aria-hidden", "false");
+    }
+  }
+
+  closeEventModal() {
+    if (!this.dom.eventModal || !this.isEventModalOpen) return;
+    this.dom.eventModal.classList.remove("active");
+    this.dom.eventModal.setAttribute("aria-hidden", "true");
+    setTimeout(() => {
+      if (!this.dom.eventModal.classList.contains("active")) {
+        this.dom.eventModal.style.display = "none";
+        this.isEventModalOpen = false;
+        if (this.eventQueue.length > 0) {
+          this.showNextEvent();
+        }
       }
     }, 250);
   }
@@ -325,10 +447,16 @@ export class GameUI {
     });
 
     this.engine.on('eraUnlock', (era) => {
-      this.showToast(`🏛️ Entering ${era.name}`, era.subtitle, '⏳');
+      this.showToast(`🏛️ Entering Epoch ${era.id}: ${era.name}`, era.subtitle, '⏳');
       this.updateTheme(era.themeClass);
+
+      const eventData = ERA_EVENTS[era.id] || EPOCH_EVENTS[era.id];
+      if (eventData) {
+        this.triggerEventPopup(eventData);
+      }
     });
   }
+
 
   showToast(title, message, icon = '💡') {
     const toast = document.createElement('div');
@@ -347,8 +475,15 @@ export class GameUI {
 
   updateTheme(themeClass) {
     // Strip old theme classes and apply new one
-    ERAS.forEach(e => this.dom.body.classList.remove(e.themeClass));
+    ERAS.forEach(e => {
+      this.dom.body.classList.remove(e.themeClass);
+      this.dom.body.classList.remove(`theme-era-${e.id}`);
+      this.dom.body.classList.remove(`theme-epoch-${e.id}`);
+    });
     this.dom.body.classList.add(themeClass);
+    if (themeClass.startsWith('theme-epoch-')) {
+      this.dom.body.classList.add(themeClass.replace('theme-epoch-', 'theme-era-'));
+    }
   }
 
   // ==========================================
@@ -369,7 +504,7 @@ export class GameUI {
 
   renderHeader() {
     const era = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
-    this.dom.eraPillNumber.innerText = `Era ${era.id}`;
+    this.dom.eraPillNumber.innerText = `Epoch ${era.id}`;
     this.dom.eraPillName.innerText = era.name;
     this.dom.eraPillDates.innerText = era.timeSpan;
 

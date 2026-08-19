@@ -41,7 +41,8 @@
    EPOCH VISUAL THEMES
    ========================================================================== */
 
-/* Era 1: Antiquity & Mechanical Automata (Bronze / Terracotta / Parchment) */
+/* Era/Epoch 1: Antiquity & Mechanical Automata (Bronze / Terracotta / Parchment) */
+body.theme-epoch-1,
 body.theme-era-1 {
   --bg-primary: #12100e;
   --bg-surface: #1e1914;
@@ -53,7 +54,8 @@ body.theme-era-1 {
   --border-glow: rgba(212, 175, 55, 0.25);
 }
 
-/* Era 2: Formal Logic & Calculators (Polished Brass / Clockwork Mahogany) */
+/* Era/Epoch 2: Formal Logic & Calculators (Polished Brass / Clockwork Mahogany) */
+body.theme-epoch-2,
 body.theme-era-2 {
   --bg-primary: #0f1416;
   --bg-surface: #192024;
@@ -65,7 +67,8 @@ body.theme-era-2 {
   --border-glow: rgba(229, 169, 60, 0.25);
 }
 
-/* Era 3: Birth of Computing & Cybernetics (Phosphor CRT Terminal Green) */
+/* Era/Epoch 3: Birth of Computing & Cybernetics (Phosphor CRT Terminal Green) */
+body.theme-epoch-3,
 body.theme-era-3 {
   --bg-primary: #08120d;
   --bg-surface: #101e16;
@@ -77,7 +80,8 @@ body.theme-era-3 {
   --border-glow: rgba(16, 185, 129, 0.3);
 }
 
-/* Era 4: Symbolic AI & Knowledge Systems (Amber CRT Mainframe Glow) */
+/* Era/Epoch 4: Symbolic AI & Knowledge Systems (Amber CRT Mainframe Glow) */
+body.theme-epoch-4,
 body.theme-era-4 {
   --bg-primary: #140e06;
   --bg-surface: #21180d;
@@ -89,7 +93,8 @@ body.theme-era-4 {
   --border-glow: rgba(245, 158, 11, 0.25);
 }
 
-/* Era 5: Statistical Learning & Neural Resurgence (Silicon Cyan & GPU Blue) */
+/* Era/Epoch 5: Statistical Learning & Neural Resurgence (Silicon Cyan & GPU Blue) */
+body.theme-epoch-5,
 body.theme-era-5 {
   --bg-primary: #08101a;
   --bg-surface: #0f1c2d;
@@ -101,7 +106,8 @@ body.theme-era-5 {
   --border-glow: rgba(6, 182, 212, 0.25);
 }
 
-/* Era 6: Deep Learning & Transformers (Electric Indigo / Tensor Violet) */
+/* Era/Epoch 6: Deep Learning & Transformers (Electric Indigo / Tensor Violet) */
+body.theme-epoch-6,
 body.theme-era-6 {
   --bg-primary: #0b0d1b;
   --bg-surface: #13172e;
@@ -113,7 +119,8 @@ body.theme-era-6 {
   --border-glow: rgba(168, 85, 247, 0.3);
 }
 
-/* Era 7: Autonomous Agents & Frontier Models (Luminous Aurora / Cyber Neon) */
+/* Era/Epoch 7: Autonomous Agents & Frontier Models (Luminous Aurora / Cyber Neon) */
+body.theme-epoch-7,
 body.theme-era-7 {
   --bg-primary: #0d0918;
   --bg-surface: #18112b;
@@ -609,11 +616,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.generator-card:hover {
-  border-color: var(--border-glow);
 }
 
 .generator-card.locked {
@@ -1451,12 +1453,6 @@ body {
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
-}
-
-.help-step-card:hover {
-  border-color: var(--border-glow);
-  background: rgba(255, 255, 255, 0.03);
 }
 
 .help-step-icon {
@@ -1517,5 +1513,207 @@ body {
 
 .btn-modal-primary:active {
   transform: translateY(0);
+}
+
+/* ==========================================================================
+   PARADOX-STYLE HISTORICAL EVENT POPUP MODAL
+   ========================================================================== */
+
+.event-modal-overlay {
+  z-index: 10050; /* Higher than normal modals */
+}
+
+.event-modal-dialog {
+  max-width: 680px;
+  border: 1px solid var(--accent-primary);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), var(--accent-glow);
+  position: relative;
+  background: var(--bg-surface);
+}
+
+.event-modal-header {
+  padding: 1.1rem 1.5rem;
+  background: var(--bg-surface-elevated);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.event-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.event-category-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+}
+
+.event-epoch-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--accent-primary);
+  color: #000;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.event-modal-body {
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* Event Hero Header */
+.event-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.event-hero-icon-container {
+  width: 58px;
+  height: 58px;
+  background: var(--bg-surface-elevated);
+  border: 2px solid var(--accent-primary);
+  box-shadow: var(--accent-glow);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.event-hero-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.event-hero-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.event-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.event-modal-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Event Narrative */
+.event-narrative-box {
+  background: var(--bg-surface-elevated);
+  border-left: 4px solid var(--accent-primary);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.event-narrative-text {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  font-weight: 400;
+}
+
+/* Historical Quote Card */
+.event-quote-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed var(--border-glow);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.event-quote-mark {
+  font-size: 2.2rem;
+  font-family: Georgia, serif;
+  line-height: 0.8;
+  color: var(--accent-primary);
+  opacity: 0.7;
+}
+
+.event-quote-text {
+  font-size: 0.88rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: #e2e8f0;
+}
+
+.event-quote-author {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-align: right;
+}
+
+/* Event Footer & Paradox Action Button */
+.event-modal-footer {
+  padding: 1.25rem 1.6rem;
+  background: var(--bg-surface-elevated);
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-event-action {
+  font-size: 0.96rem;
+  padding: 0.85rem 1.5rem;
+  letter-spacing: 0.02em;
+  background: var(--accent-gradient);
+  color: #000;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .event-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .event-hero-icon-container {
+    width: 48px;
+    height: 48px;
+  }
+
+  .event-hero-icon {
+    font-size: 1.6rem;
+  }
+
+  .event-modal-title {
+    font-size: 1.15rem;
+  }
+
+  .event-modal-body {
+    padding: 1rem 1.1rem;
+    gap: 1rem;
+  }
 }
 

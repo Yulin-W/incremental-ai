@@ -14,7 +14,7 @@
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="styles/style.css">
 </head>
-<body class="theme-era-1">
+<body class="theme-epoch-1 theme-era-1">
 
   <!-- Top Application Header -->
   <header class="app-header">
@@ -30,16 +30,16 @@
         </div>
       </div>
 
-      <!-- Current Era Progress Pill with Advance Indicator -->
-      <div class="era-status-badge" title="Current Historical Paradigm & Era Progression">
-        <span id="era-pill-number" class="era-pill-number">Era 1</span>
+      <!-- Current Epoch Progress Pill with Advance Indicator -->
+      <div class="era-status-badge" title="Current Historical Paradigm & Epoch Progression">
+        <span id="era-pill-number" class="era-pill-number">Epoch 1</span>
         <div class="era-badge-info">
           <div class="era-badge-top-row">
             <span id="era-pill-name" class="era-pill-name">Antiquity & Mechanical Automata</span>
             <span id="era-pill-dates" class="era-pill-dates">Prehistory – 1500s</span>
           </div>
           <div class="era-progress-row">
-            <div class="era-progress-bar-bg" title="Historical milestone discoveries progress toward next Era">
+            <div class="era-progress-bar-bg" title="Historical milestone discoveries progress toward next Epoch">
               <div id="era-progress-bar-fill" class="era-progress-bar-fill" style="width: 0%;"></div>
             </div>
             <span id="era-progress-text" class="era-progress-text">0 / 4 Milestones</span>
@@ -163,7 +163,7 @@
         <section class="help-section">
           <h3 class="help-heading">What is this game?</h3>
           <p class="help-text">
-            <strong>Incremental AI</strong> is an interactive educational idle game tracing the history of Artificial Intelligence. Journey across <strong>7 Historical Eras</strong>—from ancient automata and mechanical calculators to modern deep learning and autonomous frontier agents.
+            <strong>Incremental AI</strong> is an interactive educational idle game tracing the history of Artificial Intelligence. Journey across <strong>7 Historical Epochs</strong>—from ancient automata and mechanical calculators to modern deep learning and autonomous frontier agents.
           </p>
         </section>
 
@@ -191,7 +191,7 @@
               <div class="help-step-icon">⏳</div>
               <div class="help-step-content">
                 <strong>3. Unlock Milestones</strong>
-                <p>Spend Insights to unlock paradigm shifts, boost multipliers, and advance to new Eras.</p>
+                <p>Spend Insights to unlock paradigm shifts, boost multipliers, and advance to new Epochs.</p>
               </div>
             </div>
 
@@ -212,7 +212,57 @@
     </div>
   </div>
 
+  <!-- Paradox-Style Historical Event Modal Dialog -->
+  <div id="event-modal" class="modal-overlay event-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="event-modal-title" style="display: none;">
+    <div class="modal-dialog event-modal-dialog">
+      <header class="modal-header event-modal-header">
+        <div class="event-badge-group">
+          <span class="event-category-badge" id="event-modal-category">🏛️ NEW EPOCH REACHED</span>
+          <span class="event-epoch-pill" id="event-modal-epoch-pill">Epoch 2</span>
+        </div>
+        <button id="btn-close-event" class="btn-modal-close" aria-label="Close Event Modal" title="Close">✕</button>
+      </header>
+
+      <div class="modal-body event-modal-body">
+        <!-- Event Hero -->
+        <div class="event-hero">
+          <div class="event-hero-icon-container">
+            <span class="event-hero-icon" id="event-modal-icon">⚙️</span>
+          </div>
+          <div class="event-hero-titles">
+            <h2 id="event-modal-title" class="event-modal-title">Epoch 2: Formal Logic & Mechanical Calculators</h2>
+            <p id="event-modal-subtitle" class="event-modal-subtitle">The Mechanization of Arithmetic and Symbolic Computation (1600s – 1800s)</p>
+          </div>
+        </div>
+
+        <!-- Narrative Section -->
+        <section class="event-section">
+          <div class="event-narrative-box">
+            <p id="event-modal-narrative" class="event-narrative-text"></p>
+          </div>
+        </section>
+
+        <!-- Quote Box -->
+        <section class="event-section">
+          <div class="event-quote-card">
+            <div class="event-quote-mark">“</div>
+            <p id="event-modal-quote-text" class="event-quote-text"></p>
+            <div id="event-modal-quote-author" class="event-quote-author"></div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="modal-footer event-modal-footer">
+        <button id="btn-event-acknowledge" class="btn-modal-primary btn-event-action">
+          <span id="event-modal-btn-text">Calculemus! Let us calculate. →</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
   <!-- Vanilla Application Modules -->
   <script type="module" src="src/ui.js"></script>
 </body>
 </html>
+
+

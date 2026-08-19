@@ -13,6 +13,7 @@ export class GameUI {
     this.dom = {};
     this.eventQueue = [];
     this.isEventModalOpen = false;
+    this.isHelpModalOpen = false;
 
     this.initDOMReferences();
     this.bindEvents();
@@ -33,8 +34,11 @@ export class GameUI {
     // Initial Render
     this.renderAll();
     
-    // Auto-display Help & How-to-Play Modal on game load
+    // Auto-display Help & How-to-Play Modal on game load (strictly app opening trigger)
     this.openHelpModal();
+
+    // Trigger initial epoch activation (strictly an epoch change/activation trigger)
+    this.engine.initStartingEra();
 
     // Start Animation / Game Loop
     requestAnimationFrame((ts) => this.gameLoop(ts));
@@ -300,6 +304,7 @@ export class GameUI {
   // ==========================================
   openHelpModal() {
     if (!this.dom.helpModal) return;
+    this.isHelpModalOpen = true;
     this.dom.helpModal.style.display = 'flex';
     // Trigger layout reflow for CSS opacity/transform transition
     void this.dom.helpModal.offsetHeight;
@@ -309,11 +314,16 @@ export class GameUI {
 
   closeHelpModal() {
     if (!this.dom.helpModal) return;
+    this.isHelpModalOpen = false;
     this.dom.helpModal.classList.remove('active');
     this.dom.helpModal.setAttribute('aria-hidden', 'true');
     setTimeout(() => {
       if (!this.dom.helpModal.classList.contains('active')) {
         this.dom.helpModal.style.display = 'none';
+        // If an epoch change/activation event is queued, trigger it smoothly right after help closes
+        if (!this.isEventModalOpen && this.eventQueue.length > 0) {
+          this.showNextEvent();
+        }
       }
     }, 250);
   }
@@ -324,7 +334,7 @@ export class GameUI {
   triggerEventPopup(eventData) {
     if (!eventData) return;
     this.eventQueue.push(eventData);
-    if (!this.isEventModalOpen) {
+    if (!this.isEventModalOpen && !this.isHelpModalOpen) {
       this.showNextEvent();
     }
   }

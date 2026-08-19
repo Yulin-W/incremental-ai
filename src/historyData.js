@@ -20,7 +20,7 @@ export const EPOCHS = [
     subtitle: "The Mechanization of Arithmetic and Symbolic Computation",
     timeSpan: "1600s – 1800s",
     themeClass: "theme-epoch-2",
-    unlockThreshold: 5000,
+    unlockThreshold: 4000,
     flavor: "The Enlightenment brings geared arithmetic machines, binary logic, and the profound realization that thought can be computed."
   },
   {
@@ -29,7 +29,7 @@ export const EPOCHS = [
     subtitle: "Electronic Brains, Biological Neurons & Theoretical Limits",
     timeSpan: "1930s – 1950s",
     themeClass: "theme-epoch-3",
-    unlockThreshold: 150000,
+    unlockThreshold: 1000000,
     flavor: "Vacuum tubes, universal computing theory, and biological neural models converge to formally christen 'Artificial Intelligence' at Dartmouth."
   },
   {
@@ -38,7 +38,7 @@ export const EPOCHS = [
     subtitle: "Heuristic Search, Expert Rules & The First AI Winters",
     timeSpan: "1960s – 1980s",
     themeClass: "theme-epoch-4",
-    unlockThreshold: 5000000,
+    unlockThreshold: 750000000,
     flavor: "Good Old-Fashioned AI attempts to encode human knowledge into explicit IF-THEN rules, discovering the brittle limits of hand-crafted logic."
   },
   {
@@ -47,7 +47,7 @@ export const EPOCHS = [
     subtitle: "From Deductive Rules to Inductive Data-Driven Learning",
     timeSpan: "1990s – 2000s",
     themeClass: "theme-epoch-5",
-    unlockThreshold: 200000000,
+    unlockThreshold: 400000000000,
     flavor: "Backpropagation, support vector machines, and massive competitive datasets shift AI from top-down rules to bottom-up statistical patterns."
   },
   {
@@ -56,7 +56,7 @@ export const EPOCHS = [
     subtitle: "GPU Acceleration, Deep Representations & Scaled Self-Attention",
     timeSpan: "2010s – 2020",
     themeClass: "theme-epoch-6",
-    unlockThreshold: 10000000000,
+    unlockThreshold: 420000000000000,
     flavor: "Massive neural networks trained on parallel GPUs shatter vision and game records, culminating in the ubiquitous Transformer self-attention architecture."
   },
   {
@@ -65,7 +65,7 @@ export const EPOCHS = [
     subtitle: "Deliberative Reasoning, Tool-Use & Multi-Agent Swarms",
     timeSpan: "2020s – Present",
     themeClass: "theme-epoch-7",
-    unlockThreshold: 500000000000,
+    unlockThreshold: 340000000000000000,
     flavor: "Foundation models acquire chain-of-thought reflection, multimodal grounding, and autonomous tool-augmented problem-solving agency."
   }
 ];
@@ -144,8 +144,8 @@ export const GENERATORS = [
     epochId: 3,
     name: "Electromechanical Relay Array",
     icon: "🔌",
-    baseCost: 750000,
-    baseRate: 11500,
+    baseCost: 1500000,
+    baseRate: 12000,
     description: "Clicking mechanical telephone relays performing high-speed Boolean algebra."
   },
   {
@@ -154,8 +154,8 @@ export const GENERATORS = [
     epochId: 3,
     name: "Thermionic Vacuum Tube Bank",
     icon: "💡",
-    baseCost: 4500000,
-    baseRate: 58000,
+    baseCost: 10000000,
+    baseRate: 65000,
     description: "Electronic switches executing thousands of logical operations per second."
   },
   {
@@ -164,8 +164,8 @@ export const GENERATORS = [
     epochId: 3,
     name: "Turing Bombe Decryptor",
     icon: "📻",
-    baseCost: 28000000,
-    baseRate: 290000,
+    baseCost: 65000000,
+    baseRate: 350000,
     description: "Specialized parallel electromechanical search engine eliminating cryptographic contradictions."
   },
 
@@ -176,8 +176,8 @@ export const GENERATORS = [
     epochId: 4,
     name: "LISP Symbolic Workstation",
     icon: "🖥️",
-    baseCost: 180000000,
-    baseRate: 1500000,
+    baseCost: 800000000,
+    baseRate: 3500000,
     description: "Hardware microcoded natively for recursive symbolic manipulation and garbage collection."
   },
   {
@@ -186,8 +186,8 @@ export const GENERATORS = [
     epochId: 4,
     name: "Production Rule Engine",
     icon: "📑",
-    baseCost: 1100000000,
-    baseRate: 7800000,
+    baseCost: 5000000000,
+    baseRate: 18000000,
     description: "Inference engine evaluating thousands of domain-specific IF-THEN expert clauses."
   },
   {
@@ -196,8 +196,8 @@ export const GENERATORS = [
     epochId: 4,
     name: "Minimax Alpha-Beta Searcher",
     icon: "🌲",
-    baseCost: 7000000000,
-    baseRate: 42000000,
+    baseCost: 32000000000,
+    baseRate: 95000000,
     description: "Explores deep decision trees by pruning unpromising branches with heuristic scores."
   },
 
@@ -208,8 +208,8 @@ export const GENERATORS = [
     epochId: 5,
     name: "Backpropagation Gradient Rig",
     icon: "📈",
-    baseCost: 45000000000,
-    baseRate: 230000000,
+    baseCost: 800000000000,
+    baseRate: 900000000,
     description: "Iteratively calculates chain-rule partial derivatives to update multi-layer weights."
   },
   {
@@ -218,8 +218,8 @@ export const GENERATORS = [
     epochId: 5,
     name: "Support Vector Kernel Cluster",
     icon: "📐",
-    baseCost: 300000000000,
-    baseRate: 1300000000,
+    baseCost: 5000000000000,
+    baseRate: 4800000000,
     description: "Maps noisy data into infinite-dimensional Hilbert spaces for maximum-margin separation."
   },
   {
@@ -228,8 +228,8 @@ export const GENERATORS = [
     epochId: 5,
     name: "Parallel Matrix GPU Farm",
     icon: "🖲️",
-    baseCost: 2000000000000,
-    baseRate: 7500000000,
+    baseCost: 35000000000000,
+    baseRate: 25000000000,
     description: "Commercial graphics hardware repurposed for massive parallel floating-point matrix multiplication."
   },
 
@@ -240,8 +240,8 @@ export const GENERATORS = [
     epochId: 6,
     name: "Tensor Acceleration Pod",
     icon: "🧊",
-    baseCost: 15000000000000,
-    baseRate: 45000000000,
+    baseCost: 650000000000000,
+    baseRate: 250000000000,
     description: "Application-specific integrated circuits featuring systolic arrays for ultra-fast matrix math."
   },
   {
@@ -250,8 +250,8 @@ export const GENERATORS = [
     epochId: 6,
     name: "Multi-Head Attention Cluster",
     icon: "✨",
-    baseCost: 100000000000000,
-    baseRate: 260000000000,
+    baseCost: 4000000000000000,
+    baseRate: 1400000000000,
     description: "Calculates global pairwise token dependencies simultaneously without recurrent bottlenecks."
   },
   {
@@ -260,8 +260,8 @@ export const GENERATORS = [
     epochId: 6,
     name: "Exascale Pretraining Supercluster",
     icon: "🌐",
-    baseCost: 750000000000000,
-    baseRate: 1600000000000,
+    baseCost: 28000000000000000,
+    baseRate: 7500000000000,
     description: "Thousands of interconnected accelerators digesting trillions of multimodal web tokens."
   },
 
@@ -272,8 +272,8 @@ export const GENERATORS = [
     epochId: 7,
     name: "Deliberative Reasoning Engine",
     icon: "🔍",
-    baseCost: 6000000000000000,
-    baseRate: 11000000000000,
+    baseCost: 800000000000000000,
+    baseRate: 40000000000000,
     description: "Allocates inference-time test compute to explore, evaluate, and self-correct solution paths."
   },
   {
@@ -282,8 +282,8 @@ export const GENERATORS = [
     epochId: 7,
     name: "Tool-Augmented Agent Swarm",
     icon: "🤖",
-    baseCost: 50000000000000000,
-    baseRate: 78000000000000,
+    baseCost: 5000000000000000000,
+    baseRate: 220000000000000,
     description: "Hierarchical autonomous agent network operating terminal shells, compilers, and APIs."
   },
   {
@@ -292,8 +292,8 @@ export const GENERATORS = [
     epochId: 7,
     name: "Autonomous Frontier Synthesis Core",
     icon: "🌌",
-    baseCost: 400000000000000000,
-    baseRate: 550000000000000,
+    baseCost: 35000000000000000000,
+    baseRate: 1200000000000000,
     description: "Self-evolving foundation intelligence capable of generating novel scientific hypotheses."
   }
 ];
@@ -448,7 +448,7 @@ export const MILESTONES = [
     epochId: 3,
     title: "Universal Turing Machine",
     year: "1936",
-    cost: 3500000,
+    cost: 4500000,
     prerequisites: ["ms_lovelace_algorithm"],
     quoteOrFigure: "Alan Turing",
     paradigmShift: "Proved that a single universal machine can compute any mathematically algorithmic function.",
@@ -466,7 +466,7 @@ export const MILESTONES = [
     epochId: 3,
     title: "McCulloch-Pitts Artificial Neuron",
     year: "1943",
-    cost: 15000000,
+    cost: 25000000,
     prerequisites: ["ms_turing_machine"],
     quoteOrFigure: "Warren McCulloch & Walter Pitts",
     paradigmShift: "Mathematical proof that networks of idealized biological neurons can compute arbitrary logical functions.",
@@ -483,7 +483,7 @@ export const MILESTONES = [
     epochId: 3,
     title: "The Imitation Game (Turing Test)",
     year: "1950",
-    cost: 60000000,
+    cost: 150000000,
     prerequisites: ["ms_mcculloch_pitts"],
     quoteOrFigure: "Alan Turing",
     paradigmShift: "Operationalized the metaphysical question 'Can machines think?' into an empirical behavioral benchmark.",
@@ -500,7 +500,7 @@ export const MILESTONES = [
     epochId: 3,
     title: "Dartmouth Summer Research Workshop",
     year: "1956",
-    cost: 250000000,
+    cost: 750000000,
     prerequisites: ["ms_turing_test"],
     quoteOrFigure: "John McCarthy, Marvin Minsky, Claude Shannon, Nathaniel Rochester",
     paradigmShift: "Coined the term 'Artificial Intelligence' and founded it as a distinct scientific academic discipline.",
@@ -519,7 +519,7 @@ export const MILESTONES = [
     epochId: 4,
     title: "Logic Theorist & Heuristic Search",
     year: "1956",
-    cost: 800000000,
+    cost: 2500000000,
     prerequisites: ["ms_dartmouth_1956"],
     quoteOrFigure: "Allen Newell, Herbert Simon, Cliff Shaw",
     paradigmShift: "First automated theorem prover using heuristic search trees to prove complex mathematical propositions.",
@@ -536,7 +536,7 @@ export const MILESTONES = [
     epochId: 4,
     title: "ELIZA Natural Language System",
     year: "1966",
-    cost: 3000000000,
+    cost: 14000000000,
     prerequisites: ["ms_logic_theorist"],
     quoteOrFigure: "Joseph Weizenbaum (MIT)",
     paradigmShift: "Demonstrated keyword pattern matching and exposed the human tendency to project consciousness onto shallow syntax.",
@@ -553,7 +553,7 @@ export const MILESTONES = [
     epochId: 4,
     title: "Expert Systems & Knowledge Engineering",
     year: "1975",
-    cost: 15000000000,
+    cost: 80000000000,
     prerequisites: ["ms_eliza"],
     quoteOrFigure: "Edward Feigenbaum (Stanford)",
     paradigmShift: "Commercialization of rule-based inference engines separated from declarative domain knowledge bases.",
@@ -570,7 +570,7 @@ export const MILESTONES = [
     epochId: 4,
     title: "Navigating the First AI Winter",
     year: "1980s",
-    cost: 75000000000,
+    cost: 400000000000,
     prerequisites: ["ms_expert_systems"],
     quoteOrFigure: "Sir James Lighthill & AI Research Community",
     paradigmShift: "Recognized the fragility of hand-crafted rules and combinatorial explosion in unstructured real-world domains.",
@@ -589,7 +589,7 @@ export const MILESTONES = [
     epochId: 5,
     title: "Backpropagation Rediscovery",
     year: "1986",
-    cost: 250000000000,
+    cost: 2400000000000,
     prerequisites: ["ms_ai_winter_survival"],
     quoteOrFigure: "David Rumelhart, Geoffrey Hinton, Ronald Williams",
     paradigmShift: "Solved the credit assignment problem, allowing multi-layer neural networks to learn internal representations.",
@@ -607,7 +607,7 @@ export const MILESTONES = [
     epochId: 5,
     title: "Support Vector Machines & Kernel Trick",
     year: "1995",
-    cost: 1000000000000,
+    cost: 14000000000000,
     prerequisites: ["ms_backprop_revival"],
     quoteOrFigure: "Corinna Cortes & Vladimir Vapnik",
     paradigmShift: "Introduced convex optimization and maximum-margin hyperplanes with rigorous generalization bounds.",
@@ -624,7 +624,7 @@ export const MILESTONES = [
     epochId: 5,
     title: "Heuristic Search Mastery (1997)",
     year: "1997",
-    cost: 4500000000000,
+    cost: 80000000000000,
     prerequisites: ["ms_support_vector_machines"],
     quoteOrFigure: "Feng-hsiung Hsu, Murray Campbell, Thomas Anantharaman",
     paradigmShift: "Demonstrated that brute-force parallel hardware evaluating 200M positions/sec could beat human world champions.",
@@ -641,7 +641,7 @@ export const MILESTONES = [
     epochId: 5,
     title: "ImageNet & Open Benchmark Culture",
     year: "2009",
-    cost: 20000000000000,
+    cost: 420000000000000,
     prerequisites: ["ms_deep_blue"],
     quoteOrFigure: "Fei-Fei Li & ImageNet Research Team",
     paradigmShift: "Established that massive, high-quality annotated datasets are as crucial to intelligence as model architectures.",
@@ -660,7 +660,7 @@ export const MILESTONES = [
     epochId: 6,
     title: "AlexNet & GPU Deep Learning",
     year: "2012",
-    cost: 75000000000000,
+    cost: 1800000000000000,
     prerequisites: ["ms_imagenet_inception"],
     quoteOrFigure: "Alex Krizhevsky, Ilya Sutskever, Geoffrey Hinton",
     paradigmShift: "Conclusively proved the supremacy of deep convolutional neural networks trained on parallel GPUs over feature engineering.",
@@ -677,7 +677,7 @@ export const MILESTONES = [
     epochId: 6,
     title: "Deep Q-Networks (DQN)",
     year: "2015",
-    cost: 300000000000000,
+    cost: 11000000000000000,
     prerequisites: ["ms_alexnet"],
     quoteOrFigure: "Volodymyr Mnih et al. (DeepMind)",
     paradigmShift: "Unified deep neural representations with reinforcement learning to master complex visual environments from scratch.",
@@ -694,7 +694,7 @@ export const MILESTONES = [
     epochId: 6,
     title: "AlphaGo & Intuitive Monte Carlo Search",
     year: "2016",
-    cost: 1500000000000000,
+    cost: 65000000000000000,
     prerequisites: ["ms_dqn_atari"],
     quoteOrFigure: "David Silver, Demis Hassabis et al. (DeepMind)",
     paradigmShift: "Mastered an intuitive board game with 10^170 possible states using neural policy/value nets and tree search.",
@@ -711,7 +711,7 @@ export const MILESTONES = [
     epochId: 6,
     title: "Transformer Architecture (Attention Is All You Need)",
     year: "2017",
-    cost: 8000000000000000,
+    cost: 340000000000000000,
     prerequisites: ["ms_alphago"],
     quoteOrFigure: "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit et al.",
     paradigmShift: "Replaced recurrent sequential processing entirely with parallel Multi-Head Scaled Dot-Product Self-Attention.",
@@ -731,7 +731,7 @@ export const MILESTONES = [
     epochId: 7,
     title: "Instruction Tuning & RLHF Alignment",
     year: "2022",
-    cost: 40000000000000000,
+    cost: 2200000000000000000,
     prerequisites: ["ms_transformer_attention"],
     quoteOrFigure: "Long Ouyang, Jeffrey Wu, Paul Christiano et al.",
     paradigmShift: "Aligned raw autoregressive next-token predictors into helpful, cooperative, and safe interactive conversational partners.",
@@ -748,7 +748,7 @@ export const MILESTONES = [
     epochId: 7,
     title: "Chain-of-Thought & Test-Time Compute",
     year: "2022–2024",
-    cost: 200000000000000000,
+    cost: 13000000000000000000,
     prerequisites: ["ms_rlhf_alignment"],
     quoteOrFigure: "Jason Wei, Xuezhi Wang, Dale Schuurmans et al.",
     paradigmShift: "Discovered that allocating inference-time deliberation compute allows models to reason step-by-step through complex logic.",
@@ -765,7 +765,7 @@ export const MILESTONES = [
     epochId: 7,
     title: "Tool Augmentation & Model Context Protocols",
     year: "2023–2024",
-    cost: 1000000000000000000,
+    cost: 75000000000000000000,
     prerequisites: ["ms_chain_of_thought"],
     quoteOrFigure: "Frontier AI Research & Open Source Community",
     paradigmShift: "Grounded neural generation in real-world deterministic tools, code execution environments, and standardized context protocols.",
@@ -783,7 +783,7 @@ export const MILESTONES = [
     epochId: 7,
     title: "Autonomous Multi-Agent Orchestration",
     year: "2024–Present",
-    cost: 5000000000000000000,
+    cost: 380000000000000000000,
     prerequisites: ["ms_tool_augmented_mcp"],
     quoteOrFigure: "Autonomous Agent Researchers & Systems Architects",
     paradigmShift: "Self-reflective agent loops and coordinated swarms solving long-horizon scientific, mathematical, and software challenges.",

@@ -258,6 +258,11 @@ export class GameEngine {
     }
   }
 
+  initStartingEra() {
+    const initialEra = ERAS.find(e => e.id === this.currentEraId) || ERAS[0];
+    this.emit('eraUnlock', initialEra);
+  }
+
   // ==========================================
   // TICK LOOP
   // ==========================================

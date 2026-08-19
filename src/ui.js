@@ -17,6 +17,12 @@ export class GameUI {
     this.setupEngineSubscriptions();
     this.loadVersion();
     
+    // Initialize Local-Only Debug Mode if enabled
+    this.isDebugMode = GameUI.isDebugModeActive();
+    if (this.isDebugMode) {
+      this.initDebugHUD();
+    }
+
     // Initial Render
     this.renderAll();
     
@@ -85,8 +91,15 @@ export class GameUI {
   }
 
   // ==========================================
-  // NUMBER FORMATTING UTILITIES
+  // DEBUG MODE DETECTION & NUMBER UTILITIES
   // ==========================================
+  static isDebugModeActive() {
+    const isLocal = ['localhost', '127.0.0.1', '::1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasDebugParam = urlParams.get('debug') === 'true' || urlParams.get('debug') === '1' || window.location.hash === '#debug';
+    return isLocal && hasDebugParam;
+  }
+
   static formatNumber(num, decimals = 1) {
     if (num === null || num === undefined || isNaN(num)) return "0";
     if (num < 1000) {
@@ -99,6 +112,77 @@ export class GameUI {
     
     const formatted = (num / Math.pow(10, suffixIndex * 3)).toFixed(decimals);
     return `${formatted} ${suffixes[suffixIndex]}`;
+  }
+
+  // ==========================================
+  // LOCAL DEBUG HUD & TESTING CHEATS
+  // ==========================================
+  initDebugHUD() {
+    const hud = document.createElement('div');
+    hud.id = 'debug-hud';
+    hud.className = 'debug-hud';
+    hud.innerHTML = `
+      <div class="debug-hud-panel" id="debug-hud-panel">
+        <div class="debug-hud-header">
+          <span class="debug-hud-title">🧪 DEBUG MODE (Local)</span>
+          <button class="btn-debug-minimize" id="btn-debug-minimize" title="Minimize Debug HUD" aria-label="Minimize Debug HUD">✕</button>
+        </div>
+        <div class="debug-hud-body">
+          <button class="btn-debug-action" id="btn-debug-double" title="Double Current Insights (Shift+D)">
+            <span>⚡</span>
+            <span>x2 Insights</span>
+          </button>
+          <div class="debug-hud-shortcut">Shortcut: <code>Shift+D</code></div>
+        </div>
+      </div>
+      <button class="debug-hud-badge-btn" id="btn-debug-badge" title="Open Debug HUD" aria-label="Open Debug HUD" style="display:none;">
+        <span>🧪</span>
+        <span>DEBUG</span>
+      </button>
+    `;
+
+    document.body.appendChild(hud);
+
+    const panel = hud.querySelector('#debug-hud-panel');
+    const badgeBtn = hud.querySelector('#btn-debug-badge');
+    const doubleBtn = hud.querySelector('#btn-debug-double');
+    const minimizeBtn = hud.querySelector('#btn-debug-minimize');
+
+    const triggerDouble = (e) => {
+      const prevInsights = this.engine.insights;
+      this.engine.doubleInsights();
+      const gained = this.engine.insights - prevInsights;
+      this.spawnClickParticle(
+        e && e.clientX ? e : { clientX: window.innerWidth - 120, clientY: window.innerHeight - 80 },
+        `+${GameUI.formatNumber(gained)} (x2 Cheat)`
+      );
+      this.showToast('🧪 Debug Cheat Activated', `Insights multiplied by 2 (+${GameUI.formatNumber(gained)} 💡)`, '⚡');
+    };
+
+    doubleBtn.addEventListener('click', (e) => {
+      triggerDouble(e);
+    });
+
+    minimizeBtn.addEventListener('click', () => {
+      panel.style.display = 'none';
+      badgeBtn.style.display = 'flex';
+    });
+
+    badgeBtn.addEventListener('click', () => {
+      badgeBtn.style.display = 'none';
+      panel.style.display = 'block';
+    });
+
+    // Global keyboard shortcut: Shift + D
+    window.addEventListener('keydown', (e) => {
+      if (e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+        e.preventDefault();
+        triggerDouble();
+      }
+    });
+
+    console.info('%c[Incremental AI] DEBUG Mode Active (Local-Only)', 'color: #10b981; font-weight: bold; font-size: 13px;');
   }
 
   // ==========================================

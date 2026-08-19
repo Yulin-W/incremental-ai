@@ -2,7 +2,7 @@
 
 An interactive educational idle/incremental game guiding players through the **evolution of Artificial Intelligence**—from ancient mechanical automata and formal syllogisms to modern foundation models and autonomous reasoning agents.
 
-👉 **[Play Incremental AI Online](https://yulin-w.github.io/incremental-ai/)** • `v1.0.0`
+👉 **[Play Incremental AI Online](https://yulin-w.github.io/incremental-ai/)** • [Latest Release Notes](https://github.com/Yulin-W/incremental-ai/releases/latest)
 
 ---
 
@@ -35,6 +35,37 @@ An interactive educational idle/incremental game guiding players through the **e
 - **Invest in Research**: Purchase historical research tools (such as Scholastic Scribes, Difference Engines, Vacuum Tubes, GPU Rigs, and Tensor Clusters) to automate passive generation.
 - **Discover Breakthroughs**: Unlock landmark historical milestones that grant powerful multipliers, reveal higher generator tiers, and unlock entries in **The Knowledge Codex**.
 - **Advance Historical Eras**: Reach epoch insight thresholds to trigger paradigm transitions and experience the evolving visual themes across history.
+
+---
+
+## 🧪 Local Testing & Debugging
+
+The repository provides separated commands for production-faithful local testing and rapid debug testing:
+
+### 1. Production Mode Test (Mirrors Live GitHub Pages)
+Starts a static web server without debug tooling:
+```bash
+# Using Python
+python -m http.server 8000
+# Open http://localhost:8000/ in your browser
+
+# Or using npm
+npm run test:prod
+```
+
+### 2. Debug Mode Test (Local-Only Cheat Tools)
+Enables a floating, collapsible debug HUD with a **`x2 Insights`** cheat button (and `Shift+D` shortcut) for rapid milestone and era progression testing:
+```bash
+# Using Python / CLI (Opens debug mode)
+python -m http.server 8000
+# Open http://localhost:8000/?debug=true in your browser
+
+# Or using npm
+npm run test:debug
+```
+
+> [!NOTE]
+> **Production Safety Invariant**: The debug HUD and cheat commands are hard-coded to require local origin (`localhost` / `127.0.0.1` / `file:`). They are automatically and completely disabled on production deployments (`yulin-w.github.io`) even if `?debug=true` is present in the URL.
 
 ---
 

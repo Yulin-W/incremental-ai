@@ -1,0 +1,20 @@
+{
+  "name": "incremental-ai",
+  "private": true,
+  "description": "An interactive educational idle web game tracing the history of Artificial Intelligence.",
+  "type": "module",
+  "scripts": {
+    "test": "node scratch/test_engine.js",
+    "test:prod": "python -m http.server 8000",
+    "test:debug": "python -c \"import webbrowser, subprocess; webbrowser.open('http://localhost:8000/?debug=true'); subprocess.run(['python', '-m', 'http.server', '8000'])\""
+  },
+  "keywords": [
+    "idle-game",
+    "incremental-game",
+    "ai-history",
+    "educational",
+    "vanilla-js"
+  ],
+  "author": "Yulin-W",
+  "license": "MIT"
+}

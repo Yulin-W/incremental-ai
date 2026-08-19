@@ -220,6 +220,10 @@ body {
   border-radius: var(--radius-sm);
 }
 
+.version-tag:empty {
+  display: none;
+}
+
 .brand-subtitle {
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -976,4 +980,134 @@ body {
 @keyframes float-up {
   0% { transform: translateY(0) scale(1); opacity: 1; }
   100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+}
+
+/* ==========================================================================
+   LOCAL DEBUG HUD & CHEAT CONTROLS
+   ========================================================================== */
+
+.debug-hud {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  font-family: var(--font-sans);
+}
+
+.debug-hud-panel {
+  background: rgba(18, 24, 38, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  min-width: 220px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.debug-hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0.5rem;
+}
+
+.debug-hud-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--warning);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.btn-debug-minimize {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.btn-debug-minimize:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.debug-hud-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.btn-debug-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0a0e17;
+  font-weight: 800;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+}
+
+.btn-debug-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-debug-action:active {
+  transform: translateY(1px);
+}
+
+.debug-hud-shortcut {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.debug-hud-shortcut code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.debug-hud-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(18, 24, 38, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 10px rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-xl);
+  padding: 0.4rem 0.75rem;
+  color: var(--warning);
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.debug-hud-badge-btn:hover {
+  transform: scale(1.05);
+  border-color: var(--warning);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
 }

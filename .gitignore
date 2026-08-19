@@ -1,3 +1,7 @@
+# Agent and AI internal directories
+.agents/
+.gemini/
+
 # Scratch and temporary directories
 scratch/
 tmp/

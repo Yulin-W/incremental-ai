@@ -7,7 +7,7 @@ import { ERAS, GENERATORS, MILESTONES } from './historyData.js';
 
 export class GameEngine {
   constructor() {
-    this.version = '1.0.0';
+    this.version = null;
     this.insights = 0;
     this.totalInsightsEarned = 0;
     this.currentEraId = 1;
@@ -158,6 +158,16 @@ export class GameEngine {
     this.checkEraProgression();
     this.emit('stateChange');
     return clickGain;
+  }
+
+  doubleInsights() {
+    // If current insights is 0, give an initial boost of 10 for rapid test start
+    const gain = this.insights > 0 ? this.insights : 10;
+    this.insights += gain;
+    this.totalInsightsEarned += gain;
+    this.checkEraProgression();
+    this.emit('stateChange');
+    return this.insights;
   }
 
   setBulkBuyMode(mode) {

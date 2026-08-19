@@ -54,7 +54,7 @@ npm run test:prod
 ```
 
 ### 2. Debug Mode Test (Local-Only Cheat Tools)
-Enables a floating, collapsible debug HUD with a **`x2 Insights`** cheat button (and `Shift+D` shortcut) for rapid milestone and era progression testing:
+Enables a floating, collapsible debug HUD with a **`x10 Insights`** cheat button (and `Shift+D` shortcut) for rapid milestone and era progression testing:
 ```bash
 # Using Python / CLI (Opens debug mode)
 python -m http.server 8000

@@ -31,7 +31,7 @@
       </div>
 
       <!-- Current Epoch Progress Pill with Advance Indicator -->
-      <div class="era-status-badge" title="Current Historical Paradigm & Epoch Progression">
+      <div class="era-status-badge">
         <span id="era-pill-number" class="era-pill-number">Epoch 1</span>
         <div class="era-badge-info">
           <div class="era-badge-top-row">
@@ -39,13 +39,22 @@
             <span id="era-pill-dates" class="era-pill-dates">Prehistory – 1500s</span>
           </div>
           <div class="era-progress-row">
-            <div class="era-progress-bar-bg" title="Historical milestone discoveries progress toward next Epoch">
+            <div class="era-progress-bar-bg">
               <div id="era-progress-bar-fill" class="era-progress-bar-fill" style="width: 0%;"></div>
             </div>
             <span id="era-progress-text" class="era-progress-text">0 / 4 Milestones</span>
           </div>
         </div>
       </div>
+
+      <!-- Unified Active Focus & Paradigm Shift / Restart Button -->
+      <button id="active-paradigm-badge" class="active-paradigm-badge pre-clear-restart" aria-label="Active Focus and Paradigm Shift Actions">
+        <span id="paradigm-badge-icon" class="paradigm-badge-icon">🔄</span>
+        <div class="paradigm-badge-info">
+          <span id="paradigm-badge-label" class="paradigm-badge-label">Restart Timeline</span>
+          <span id="paradigm-badge-name" class="paradigm-badge-name">Epoch 1 (Reset)</span>
+        </div>
+      </button>
 
       <!-- Resource Economy Counter -->
       <div class="resource-stats">
@@ -61,7 +70,7 @@
 
       <!-- Header Actions / Utilities -->
       <div class="header-actions">
-        <button id="btn-help" class="btn-help" title="How to Play & Game Guide" aria-label="Open Game Guide and Help">
+        <button id="btn-help" class="btn-help" aria-label="Open Game Guide and Help">
           <span class="btn-help-icon">ℹ️</span>
           <span class="btn-help-text">Help</span>
         </button>
@@ -155,7 +164,7 @@
             <p class="modal-subtitle">The History of Artificial Intelligence</p>
           </div>
         </div>
-        <button id="btn-close-help" class="btn-modal-close" aria-label="Close Help Modal" title="Close">✕</button>
+        <button id="btn-close-help" class="btn-modal-close" aria-label="Close Help Modal">✕</button>
       </header>
       
       <div class="modal-body">
@@ -202,6 +211,14 @@
                 <p>Select any milestone to read verified historical lore, scientific context, and academic citations.</p>
               </div>
             </div>
+
+            <div class="help-step-card help-step-full-width help-step-highlight">
+              <div class="help-step-icon">🌌</div>
+              <div class="help-step-content">
+                <strong>5. Replayability & The Singularity</strong>
+                <p>Can you guide humanity through all 7 Historical Epochs? Reaching the technological frontier unlocks the <em>Paradigm Shift</em> — a mysterious rebirth mechanism that alters the fabric of history and empowers future playthroughs. What awaits beyond the final milestone?</p>
+              </div>
+            </div>
           </div>
         </section>
       </div>
@@ -220,7 +237,7 @@
           <span class="event-category-badge" id="event-modal-category">🏛️ NEW EPOCH REACHED</span>
           <span class="event-epoch-pill" id="event-modal-epoch-pill">Epoch 2</span>
         </div>
-        <button id="btn-close-event" class="btn-modal-close" aria-label="Close Event Modal" title="Close">✕</button>
+        <button id="btn-close-event" class="btn-modal-close" aria-label="Close Event Modal">✕</button>
       </header>
 
       <div class="modal-body event-modal-body">
@@ -255,6 +272,97 @@
       <footer class="modal-footer event-modal-footer">
         <button id="btn-event-acknowledge" class="btn-modal-primary btn-event-action">
           <span id="event-modal-btn-text">Calculemus! Let us calculate. →</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Paradigm Shift & Technological Singularity Reincarnation Modal Dialog -->
+  <div id="paradigm-modal" class="modal-overlay paradigm-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="paradigm-modal-title" style="display: none;">
+    <div class="modal-dialog paradigm-modal-dialog">
+      <header class="modal-header paradigm-modal-header">
+        <div class="event-badge-group">
+          <span class="event-category-badge paradigm-singularity-badge">🌌 TECHNOLOGICAL SINGULARITY REACHED</span>
+          <span class="event-epoch-pill paradigm-epoch-pill">Epoch 7 Complete</span>
+        </div>
+        <button id="btn-close-paradigm" class="btn-modal-close" aria-label="Close Paradigm Modal">✕</button>
+      </header>
+
+      <div class="modal-body paradigm-modal-body">
+        <div class="paradigm-hero">
+          <div class="paradigm-hero-icon-container">
+            <span class="paradigm-hero-icon">🌌</span>
+          </div>
+          <div class="paradigm-hero-text">
+            <h2 id="paradigm-modal-title" class="paradigm-modal-title">Technological Singularity: Choose Your Paradigm</h2>
+            <p class="paradigm-modal-subtitle">
+              You have discovered all 28 historical milestones! Choose an AI Philosophy below to reincarnate history with specialized speed buffs (~2x faster), or replay unassisted.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paradigm Action Selection Grid (2x2 + 1 Full Width) -->
+        <div class="paradigm-selection-container">
+          <div class="paradigm-2x2-grid" id="paradigm-2x2-grid">
+            <!-- 4 Paradigms dynamically injected via ui.js -->
+          </div>
+
+          <!-- 5th Full-Width Option: Standard Replay -->
+          <div id="paradigm-vanilla-slot" class="paradigm-vanilla-slot">
+            <!-- 5th Vanilla Button dynamically injected via ui.js -->
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-footer paradigm-modal-footer">
+        <div class="paradigm-footer-action-group">
+          <button id="btn-stay-timeline" class="btn-modal-primary btn-civ-continue">
+            <span class="btn-civ-main">🌌 "Just One More Insight..."</span>
+            <span class="btn-civ-sub">Continue in current timeline (You can Paradigm Shift anytime from the top-right header button)</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Paradigm Shift Confirmation Modal Dialog -->
+  <div id="paradigm-confirm-modal" class="modal-overlay paradigm-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="paradigm-confirm-title" style="display: none;">
+    <div class="modal-dialog paradigm-confirm-dialog">
+      <header class="modal-header paradigm-confirm-header">
+        <div class="event-badge-group">
+          <span class="event-category-badge paradigm-confirm-badge">⚠️ CONFIRM PARADIGM SHIFT</span>
+        </div>
+        <button id="btn-close-confirm" class="btn-modal-close" aria-label="Cancel Paradigm Shift">✕</button>
+      </header>
+
+      <div class="modal-body paradigm-confirm-body">
+        <div class="paradigm-confirm-hero">
+          <div class="paradigm-confirm-icon" id="confirm-paradigm-icon">⚡</div>
+          <div>
+            <h3 class="paradigm-confirm-title" id="confirm-paradigm-title">Shift to Connectionist Revolution?</h3>
+            <p class="paradigm-confirm-desc" id="confirm-paradigm-desc">
+              This will restart the historical timeline from Epoch 1 with your chosen AI research bonuses active (~2x speed).
+            </p>
+          </div>
+        </div>
+
+        <div class="paradigm-confirm-card" id="confirm-paradigm-effects-card">
+          <div class="confirm-effects-header">⚡ ACTIVE BUFFS FOR NEXT RUN:</div>
+          <div class="confirm-effects-body" id="confirm-paradigm-effects-text"></div>
+        </div>
+
+        <div class="paradigm-confirm-warning">
+          <span>ℹ️</span>
+          <span>Current insights, generators, and milestone discoveries will reset to Epoch 1.</span>
+        </div>
+      </div>
+
+      <footer class="modal-footer paradigm-confirm-footer">
+        <button id="btn-cancel-confirm" class="btn-confirm-cancel">
+          <span>✕ Stay in Current Timeline</span>
+        </button>
+        <button id="btn-execute-shift" class="btn-confirm-execute">
+          <span>🚀 Confirm & Reincarnate →</span>
         </button>
       </footer>
     </div>

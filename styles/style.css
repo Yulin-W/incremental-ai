@@ -1717,3 +1717,557 @@ body {
   }
 }
 
+/* ==========================================
+   AI PARADIGM CYCLES & REPLAYABILITY (v1.7.0)
+   ========================================== */
+
+/* Unified Active Paradigm & Restart Header Button */
+.active-paradigm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.85rem;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-family: var(--font-sans);
+  text-align: left;
+  outline: none;
+}
+
+.active-paradigm-badge:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-primary);
+  box-shadow: var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.active-paradigm-badge:active {
+  transform: translateY(0);
+}
+
+.active-paradigm-badge.paradigm-shift-ready {
+  border-color: var(--border-glow);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), 0 0 10px var(--border-glow);
+}
+
+.active-paradigm-badge.paradigm-shift-ready:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--accent-glow);
+}
+
+.paradigm-badge-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.paradigm-badge-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.paradigm-badge-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent-primary);
+}
+
+.paradigm-badge-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+/* Paradigm Shift Modal Dialog */
+.paradigm-modal-dialog {
+  max-width: 860px;
+  width: 95%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 45px rgba(168, 85, 247, 0.25);
+  border-radius: var(--radius-lg);
+}
+
+.paradigm-singularity-badge {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: #e879f9;
+}
+
+.paradigm-epoch-pill {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.paradigm-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.paradigm-hero-icon-container {
+  width: 58px;
+  height: 58px;
+  background: var(--bg-surface-elevated);
+  border: 2px solid #a855f7;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.paradigm-hero-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.paradigm-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.paradigm-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.paradigm-modal-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Paradigm Selection Container & 2x2 Grid */
+.paradigm-selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.paradigm-2x2-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .paradigm-2x2-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.paradigm-action-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  position: relative;
+  outline: none;
+}
+
+.paradigm-action-btn:hover {
+  background: rgba(31, 41, 61, 0.95);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.paradigm-action-btn.paradigm-symbolic:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+}
+
+.paradigm-action-btn.paradigm-connectionist:hover {
+  border-color: #a855f7;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+}
+
+.paradigm-action-btn.paradigm-cybernetic:hover {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+}
+
+.paradigm-action-btn.paradigm-probabilistic:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+}
+
+.paradigm-btn-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.paradigm-btn-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.paradigm-btn-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.paradigm-btn-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.paradigm-btn-name {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.paradigm-btn-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+  font-family: var(--font-mono);
+}
+
+.paradigm-speed-badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badge-buff {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.badge-vanilla {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  color: #cbd5e1;
+}
+
+.paradigm-btn-flavor {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.paradigm-btn-effects {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.paradigm-effects-label {
+  font-size: 0.64rem;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: #c084fc;
+  letter-spacing: 0.05em;
+}
+
+.paradigm-effects-text {
+  font-size: 0.76rem;
+  color: var(--text-main);
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.paradigm-btn-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.paradigm-btn-action-text {
+  transition: transform var(--transition-fast);
+}
+
+.paradigm-action-btn:hover .paradigm-btn-action-text {
+  transform: translateX(3px);
+  color: #fff;
+}
+
+.paradigm-completed-badge {
+  font-size: 0.68rem;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-full);
+}
+
+/* 5th Vanilla Button */
+.btn-paradigm-vanilla {
+  width: 100%;
+  margin-top: 0.75rem;
+  border-color: rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.btn-paradigm-vanilla:hover {
+  border-color: #94a3b8;
+  background: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 0 20px rgba(148, 163, 184, 0.25);
+}
+
+/* Civilization-Style Continuation Button */
+.paradigm-footer-action-group {
+  width: 100%;
+}
+
+.btn-civ-continue {
+  width: 100%;
+  padding: 0.95rem 1.4rem;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.btn-civ-main {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+
+.btn-civ-sub {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+
+.btn-civ-continue:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-primary);
+  box-shadow: var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-civ-continue:active {
+  transform: translateY(0);
+}
+
+/* Paradigm Confirmation Dialog */
+.paradigm-confirm-dialog {
+  max-width: 540px;
+  width: 92%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 40px rgba(168, 85, 247, 0.3);
+  border-radius: var(--radius-lg);
+}
+
+.paradigm-confirm-badge {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.paradigm-confirm-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.paradigm-confirm-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  width: 52px;
+  height: 52px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.paradigm-confirm-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.paradigm-confirm-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.paradigm-confirm-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.9rem;
+}
+
+.confirm-effects-header {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: #c084fc;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.25rem;
+}
+
+.confirm-effects-body {
+  font-size: 0.8rem;
+  color: var(--text-main);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.paradigm-confirm-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.65rem;
+}
+
+.paradigm-confirm-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  padding: 1rem 1.4rem;
+  background: var(--bg-surface-elevated);
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 520px) {
+  .paradigm-confirm-footer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-confirm-cancel {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border-glow);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.btn-confirm-cancel:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.btn-confirm-cancel:active {
+  transform: translateY(0);
+}
+
+.btn-confirm-execute {
+  background: var(--accent-gradient);
+  color: #000;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.86rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-confirm-execute:hover {
+  filter: brightness(1.1);
+  box-shadow: var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-confirm-execute:active {
+  transform: translateY(0);
+}
+
+.help-step-highlight {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.help-step-full-width {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.1);
+}
+
+
+
+

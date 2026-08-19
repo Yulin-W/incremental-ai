@@ -4,7 +4,7 @@
  */
 
 import { GameEngine } from './engine.js';
-import { ERAS, GENERATORS, MILESTONES, ERA_EVENTS } from './historyData.js';
+import { ERAS, GENERATORS, MILESTONES, ERA_EVENTS, PARADIGMS, SINGULARITY_EVENT } from './historyData.js';
 
 export class GameUI {
   constructor() {
@@ -14,6 +14,9 @@ export class GameUI {
     this.eventQueue = [];
     this.isEventModalOpen = false;
     this.isHelpModalOpen = false;
+    this.isParadigmModalOpen = false;
+    this.isParadigmConfirmOpen = false;
+    this.pendingParadigmChoice = null;
 
     this.initDOMReferences();
     this.bindEvents();
@@ -80,6 +83,12 @@ export class GameUI {
       eraProgressText: document.getElementById('era-progress-text'),
       statInsights: document.getElementById('stat-insights'),
       statRate: document.getElementById('stat-rate'),
+      
+      // Unified Active Paradigm Header Button (v1.7.0)
+      activeParadigmBadge: document.getElementById('active-paradigm-badge'),
+      paradigmBadgeIcon: document.getElementById('paradigm-badge-icon'),
+      paradigmBadgeLabel: document.getElementById('paradigm-badge-label'),
+      paradigmBadgeName: document.getElementById('paradigm-badge-name'),
 
       // Left Panel (Production Hub)
       btnContemplate: document.getElementById('btn-contemplate'),
@@ -117,6 +126,23 @@ export class GameUI {
       eventModalBtnText: document.getElementById('event-modal-btn-text'),
       btnEventAcknowledge: document.getElementById('btn-event-acknowledge'),
       btnCloseEvent: document.getElementById('btn-close-event'),
+
+      // Paradigm Shift / Singularity Modal Dialog (v1.7.0)
+      paradigmModal: document.getElementById('paradigm-modal'),
+      paradigm2x2Grid: document.getElementById('paradigm-2x2-grid'),
+      paradigmVanillaSlot: document.getElementById('paradigm-vanilla-slot'),
+      btnStayTimeline: document.getElementById('btn-stay-timeline'),
+      btnCloseParadigm: document.getElementById('btn-close-paradigm'),
+
+      // Paradigm Shift Confirmation Modal Dialog (v1.7.0)
+      paradigmConfirmModal: document.getElementById('paradigm-confirm-modal'),
+      confirmParadigmIcon: document.getElementById('confirm-paradigm-icon'),
+      confirmParadigmTitle: document.getElementById('confirm-paradigm-title'),
+      confirmParadigmDesc: document.getElementById('confirm-paradigm-desc'),
+      confirmParadigmEffectsText: document.getElementById('confirm-paradigm-effects-text'),
+      btnCancelConfirm: document.getElementById('btn-cancel-confirm'),
+      btnExecuteShift: document.getElementById('btn-execute-shift'),
+      btnCloseConfirm: document.getElementById('btn-close-confirm'),
 
       // Toast Container
       toastContainer: document.getElementById('toast-container')
@@ -158,17 +184,17 @@ export class GameUI {
       <div class="debug-hud-panel" id="debug-hud-panel">
         <div class="debug-hud-header">
           <span class="debug-hud-title">🧪 DEBUG MODE (Local)</span>
-          <button class="btn-debug-minimize" id="btn-debug-minimize" title="Minimize Debug HUD" aria-label="Minimize Debug HUD">✕</button>
+          <button class="btn-debug-minimize" id="btn-debug-minimize" aria-label="Minimize Debug HUD">✕</button>
         </div>
         <div class="debug-hud-body">
-          <button class="btn-debug-action" id="btn-debug-double" title="Double Current Insights (Shift+D)">
+          <button class="btn-debug-action" id="btn-debug-double" aria-label="Multiply Current Insights by 10 (Shift+D)">
             <span>⚡</span>
-            <span>x2 Insights</span>
+            <span>x10 Insights</span>
           </button>
           <div class="debug-hud-shortcut">Shortcut: <code>Shift+D</code></div>
         </div>
       </div>
-      <button class="debug-hud-badge-btn" id="btn-debug-badge" title="Open Debug HUD" aria-label="Open Debug HUD" style="display:none;">
+      <button class="debug-hud-badge-btn" id="btn-debug-badge" aria-label="Open Debug HUD" style="display:none;">
         <span>🧪</span>
         <span>DEBUG</span>
       </button>
@@ -181,19 +207,19 @@ export class GameUI {
     const doubleBtn = hud.querySelector('#btn-debug-double');
     const minimizeBtn = hud.querySelector('#btn-debug-minimize');
 
-    const triggerDouble = (e) => {
+    const triggerMultiply = (e) => {
       const prevInsights = this.engine.insights;
-      this.engine.doubleInsights();
+      this.engine.multiplyInsights(10);
       const gained = this.engine.insights - prevInsights;
       this.spawnClickParticle(
         e && e.clientX ? e : { clientX: window.innerWidth - 120, clientY: window.innerHeight - 80 },
-        `+${GameUI.formatNumber(gained)} (x2 Cheat)`
+        `+${GameUI.formatNumber(gained)} (x10 Cheat)`
       );
-      this.showToast('🧪 Debug Cheat Activated', `Insights multiplied by 2 (+${GameUI.formatNumber(gained)} 💡)`, '⚡');
+      this.showToast('🧪 Debug Cheat Activated', `Insights multiplied by 10 (+${GameUI.formatNumber(gained)} 💡)`, '⚡');
     };
 
     doubleBtn.addEventListener('click', (e) => {
-      triggerDouble(e);
+      triggerMultiply(e);
     });
 
     minimizeBtn.addEventListener('click', () => {
@@ -280,9 +306,70 @@ export class GameUI {
       });
     }
 
+    // Unified Paradigm Shift & Timeline Restart Button (v1.7.0)
+    if (this.dom.activeParadigmBadge) {
+      this.dom.activeParadigmBadge.addEventListener('click', () => {
+        if (this.engine.hasEverUnlockedSingularity) {
+          this.openParadigmModal();
+        } else {
+          this.requestSimpleRestart();
+        }
+      });
+    }
+    if (this.dom.btnCloseParadigm) {
+      this.dom.btnCloseParadigm.addEventListener('click', () => this.closeParadigmModal());
+    }
+    if (this.dom.btnStayTimeline) {
+      this.dom.btnStayTimeline.addEventListener('click', () => {
+        this.closeParadigmModal();
+        this.showToast('🌌 Continuing Current Timeline', 'Explore further or inspect the Codex. Paradigm Shift remains available in the header.', '📜');
+      });
+    }
+    if (this.dom.paradigmModal) {
+      this.dom.paradigmModal.addEventListener('click', (e) => {
+        if (e.target === this.dom.paradigmModal) {
+          this.closeParadigmModal();
+        }
+      });
+    }
+
+    // Paradigm Shift Confirmation Modal Controls (v1.7.0)
+    if (this.dom.btnCloseConfirm) {
+      this.dom.btnCloseConfirm.addEventListener('click', () => this.closeConfirmModal());
+    }
+    if (this.dom.btnCancelConfirm) {
+      this.dom.btnCancelConfirm.addEventListener('click', () => this.closeConfirmModal());
+    }
+    if (this.dom.btnExecuteShift) {
+      this.dom.btnExecuteShift.addEventListener('click', () => this.executeConfirmedShift());
+    }
+    if (this.dom.paradigmConfirmModal) {
+      this.dom.paradigmConfirmModal.addEventListener('click', (e) => {
+        if (e.target === this.dom.paradigmConfirmModal) {
+          this.closeConfirmModal();
+        }
+      });
+    }
+
     // Global Keydown Handler for Modals
     window.addEventListener('keydown', (e) => {
-      // Prioritize active Event Modal
+      // Prioritize Confirmation Modal
+      if (this.dom.paradigmConfirmModal && this.dom.paradigmConfirmModal.classList.contains('active')) {
+        if (e.key === 'Escape') {
+          this.closeConfirmModal();
+          return;
+        }
+      }
+
+      // Prioritize active Paradigm Modal
+      if (this.dom.paradigmModal && this.dom.paradigmModal.classList.contains('active')) {
+        if (e.key === 'Escape') {
+          this.closeParadigmModal();
+          return;
+        }
+      }
+
+      // Active Event Modal
       if (this.dom.eventModal && this.dom.eventModal.classList.contains('active')) {
         if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
           if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
@@ -297,6 +384,185 @@ export class GameUI {
         this.closeHelpModal();
       }
     });
+  }
+
+  // ==========================================
+  // PARADIGM SHIFT & SINGULARITY MODAL CONTROLLER
+  // ==========================================
+  openParadigmModal() {
+    if (!this.dom.paradigmModal) return;
+    this.isParadigmModalOpen = true;
+    this.renderParadigmCards();
+    this.dom.paradigmModal.style.display = 'flex';
+    void this.dom.paradigmModal.offsetHeight;
+    this.dom.paradigmModal.classList.add('active');
+    this.dom.paradigmModal.setAttribute('aria-hidden', 'false');
+  }
+
+  closeParadigmModal() {
+    if (!this.dom.paradigmModal) return;
+    this.isParadigmModalOpen = false;
+    this.dom.paradigmModal.classList.remove('active');
+    this.dom.paradigmModal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => {
+      if (!this.dom.paradigmModal.classList.contains('active')) {
+        this.dom.paradigmModal.style.display = 'none';
+      }
+    }, 250);
+  }
+
+  renderParadigmCards() {
+    if (!this.dom.paradigm2x2Grid || !this.dom.paradigmVanillaSlot) return;
+    this.dom.paradigm2x2Grid.innerHTML = '';
+    this.dom.paradigmVanillaSlot.innerHTML = '';
+
+    // Render 4 Historical AI Research Paradigms in 2x2 Grid
+    PARADIGMS.forEach(p => {
+      const isCompleted = this.engine.completedParadigms.has(p.id);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `paradigm-action-btn ${p.themeClass || ''}`;
+      btn.innerHTML = `
+        <div class="paradigm-btn-top">
+          <div class="paradigm-btn-title-row">
+            <span class="paradigm-btn-icon">${p.icon}</span>
+            <div class="paradigm-btn-title-group">
+              <span class="paradigm-btn-name">${p.name}</span>
+              <span class="paradigm-btn-subtitle">${p.subtitle}</span>
+            </div>
+          </div>
+          <span class="paradigm-speed-badge badge-buff">${p.speedRating}</span>
+        </div>
+        <p class="paradigm-btn-flavor">${p.flavor}</p>
+        <div class="paradigm-btn-effects">
+          <span class="paradigm-effects-label">⚡ REPLAY BUFFS (~2x SPEED):</span>
+          <span class="paradigm-effects-text">${p.effectsSummary}</span>
+        </div>
+        <div class="paradigm-btn-footer">
+          <span class="paradigm-btn-action-text">Select & Initiate Shift →</span>
+          ${isCompleted ? '<span class="paradigm-completed-badge" aria-label="Previously Mastered">★ Mastered</span>' : ''}
+        </div>
+      `;
+
+      btn.addEventListener('click', () => {
+        this.requestParadigmShift(p.id);
+      });
+
+      this.dom.paradigm2x2Grid.appendChild(btn);
+    });
+
+    // Render 5th Full-Width Button: Standard Historical Replay (No Buffs)
+    const vanillaBtn = document.createElement('button');
+    vanillaBtn.type = 'button';
+    vanillaBtn.className = 'paradigm-action-btn btn-paradigm-vanilla';
+    vanillaBtn.innerHTML = `
+      <div class="paradigm-btn-top">
+        <div class="paradigm-btn-title-row">
+          <span class="paradigm-btn-icon">📜</span>
+          <div class="paradigm-btn-title-group">
+            <span class="paradigm-btn-name">Standard Historical Replay (No Paradigm Buffs)</span>
+            <span class="paradigm-btn-subtitle">Authentic Unassisted Timeline (1600s – Present)</span>
+          </div>
+        </div>
+        <span class="paradigm-speed-badge badge-vanilla">Authentic 1x Speed</span>
+      </div>
+      <div class="paradigm-btn-effects">
+        <span class="paradigm-effects-label">BASELINE SPEED:</span>
+        <span class="paradigm-effects-text">Experience the authentic, unassisted historical progression curve without any active paradigm speed multipliers or bonuses.</span>
+      </div>
+      <div class="paradigm-btn-footer">
+        <span class="paradigm-btn-action-text">Replay Without Buffs →</span>
+      </div>
+    `;
+
+    vanillaBtn.addEventListener('click', () => {
+      this.requestParadigmShift('paradigm_none');
+    });
+
+    this.dom.paradigmVanillaSlot.appendChild(vanillaBtn);
+  }
+
+  // ==========================================
+  // CONFIRMATION DIALOG FLOW (ACCIDENTAL CLICK GUARD)
+  // ==========================================
+  requestParadigmShift(paradigmId) {
+    this.pendingParadigmChoice = paradigmId;
+    
+    if (paradigmId && paradigmId !== 'paradigm_none') {
+      const p = PARADIGMS.find(item => item.id === paradigmId);
+      if (p) {
+        this.dom.confirmParadigmIcon.textContent = p.icon;
+        this.dom.confirmParadigmTitle.textContent = `Shift to ${p.name}?`;
+        this.dom.confirmParadigmDesc.textContent = `Restart history from Epoch 1 aligned with ${p.name}. Your new run will progress ~2x faster.`;
+        this.dom.confirmParadigmEffectsText.textContent = p.effectsSummary;
+      }
+    } else {
+      this.dom.confirmParadigmIcon.textContent = '📜';
+      this.dom.confirmParadigmTitle.textContent = 'Restart Standard Historical Run?';
+      this.dom.confirmParadigmDesc.textContent = 'Restart history from Epoch 1 in authentic unassisted mode with standard 1x baseline speed.';
+      this.dom.confirmParadigmEffectsText.textContent = 'Standard baseline speed; No active doctrine buffs or discounts.';
+    }
+
+    if (this.dom.paradigmConfirmModal) {
+      this.isParadigmConfirmOpen = true;
+      this.dom.paradigmConfirmModal.style.display = 'flex';
+      void this.dom.paradigmConfirmModal.offsetHeight;
+      this.dom.paradigmConfirmModal.classList.add('active');
+      this.dom.paradigmConfirmModal.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  // Pre-Clear Timeline Restart Flow (with motivational endgame hint)
+  requestSimpleRestart() {
+    this.pendingParadigmChoice = 'simple_restart';
+
+    if (this.dom.confirmParadigmIcon) this.dom.confirmParadigmIcon.textContent = '🔄';
+    if (this.dom.confirmParadigmTitle) this.dom.confirmParadigmTitle.textContent = 'Restart Timeline from Epoch 1?';
+    if (this.dom.confirmParadigmDesc) {
+      this.dom.confirmParadigmDesc.textContent = 'This will reset your current insights, historical automation, and milestone discoveries back to Epoch 1: Antiquity.';
+    }
+    if (this.dom.confirmParadigmEffectsText) {
+      this.dom.confirmParadigmEffectsText.innerHTML = `<strong>💡 Endgame Motivator:</strong> Complete all 7 Epochs once to achieve the Technological Singularity. Clearing the game permanently upgrades this Restart button into the <em>Paradigm Shift</em> — unlocking specialized AI research doctrines with ~2x speed boosts!`;
+    }
+
+    if (this.dom.paradigmConfirmModal) {
+      this.isParadigmConfirmOpen = true;
+      this.dom.paradigmConfirmModal.style.display = 'flex';
+      void this.dom.paradigmConfirmModal.offsetHeight;
+      this.dom.paradigmConfirmModal.classList.add('active');
+      this.dom.paradigmConfirmModal.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  closeConfirmModal() {
+    if (!this.dom.paradigmConfirmModal) return;
+    this.isParadigmConfirmOpen = false;
+    this.dom.paradigmConfirmModal.classList.remove('active');
+    this.dom.paradigmConfirmModal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => {
+      if (!this.dom.paradigmConfirmModal.classList.contains('active')) {
+        this.dom.paradigmConfirmModal.style.display = 'none';
+      }
+    }, 250);
+  }
+
+  executeConfirmedShift() {
+    if (this.pendingParadigmChoice === 'simple_restart') {
+      this.closeConfirmModal();
+      this.engine.resetTimeline();
+      this.switchMobileTab('production');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.showToast('🔄 Timeline Restarted', 'Beginning anew in Epoch 1: Antiquity & Mechanical Automata.', '📜');
+      return;
+    }
+
+    const chosenId = this.pendingParadigmChoice === 'paradigm_none' ? null : this.pendingParadigmChoice;
+    this.closeConfirmModal();
+    this.closeParadigmModal();
+    this.engine.triggerParadigmShift(chosenId);
+    this.switchMobileTab('production');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // ==========================================
@@ -465,6 +731,17 @@ export class GameUI {
         this.triggerEventPopup(eventData);
       }
     });
+
+    this.engine.on('singularityReached', (singularityData) => {
+      this.showToast('🌌 Frontier Singularity Achieved!', 'All 28 historical milestones discovered! Paradigm Shift is now unlocked.', '🌌');
+      this.openParadigmModal();
+    });
+
+    this.engine.on('paradigmShift', (shiftData) => {
+      const paradigm = this.engine.getActiveParadigm();
+      const name = paradigm ? paradigm.name : 'Standard Historical Mode';
+      this.showToast('🌌 Paradigm Shift Activated', `Beginning historical cycle with ${name}.`, '🚀');
+    });
   }
 
 
@@ -521,6 +798,41 @@ export class GameUI {
     this.dom.statInsights.innerText = GameUI.formatNumber(this.engine.insights);
     this.dom.statRate.innerText = `+${GameUI.formatNumber(this.engine.getTotalRate())} / s`;
     this.dom.clickGainBadge.innerText = `+${GameUI.formatNumber(this.engine.getClickPower())} / click`;
+
+    // Unified Active Paradigm & Restart Header Button (v1.7.0)
+    if (this.dom.activeParadigmBadge) {
+      this.dom.activeParadigmBadge.style.display = 'inline-flex';
+      const activeParadigm = this.engine.getActiveParadigm();
+
+      if (this.engine.hasEverUnlockedSingularity) {
+        // Post-Clear State: Paradigm Shift Unlocked & Available
+        this.dom.activeParadigmBadge.classList.add('paradigm-shift-ready');
+        this.dom.activeParadigmBadge.classList.remove('pre-clear-restart');
+
+        if (activeParadigm) {
+          if (this.dom.paradigmBadgeIcon) this.dom.paradigmBadgeIcon.textContent = activeParadigm.icon;
+          if (this.dom.paradigmBadgeLabel) this.dom.paradigmBadgeLabel.textContent = 'Active Focus • Restart';
+          if (this.dom.paradigmBadgeName) this.dom.paradigmBadgeName.textContent = `${activeParadigm.name} ▾`;
+        } else if (this.engine.replayCount > 0) {
+          if (this.dom.paradigmBadgeIcon) this.dom.paradigmBadgeIcon.textContent = '📜';
+          if (this.dom.paradigmBadgeLabel) this.dom.paradigmBadgeLabel.textContent = 'Active Focus • Restart';
+          if (this.dom.paradigmBadgeName) this.dom.paradigmBadgeName.textContent = 'Standard Replay ▾';
+        } else {
+          // Cleared epoch 7 in current initial run, hasn't shifted yet
+          if (this.dom.paradigmBadgeIcon) this.dom.paradigmBadgeIcon.textContent = '🌌';
+          if (this.dom.paradigmBadgeLabel) this.dom.paradigmBadgeLabel.textContent = 'Paradigm Shift • Restart';
+          if (this.dom.paradigmBadgeName) this.dom.paradigmBadgeName.textContent = 'Singularity Ready ▾';
+        }
+      } else {
+        // Pre-Clear State: Standard Restart Action Button
+        this.dom.activeParadigmBadge.classList.remove('paradigm-shift-ready');
+        this.dom.activeParadigmBadge.classList.add('pre-clear-restart');
+        if (this.dom.paradigmBadgeIcon) this.dom.paradigmBadgeIcon.textContent = '🔄';
+        if (this.dom.paradigmBadgeLabel) this.dom.paradigmBadgeLabel.textContent = 'Restart Timeline';
+        if (this.dom.paradigmBadgeName) this.dom.paradigmBadgeName.textContent = 'Epoch 1 (Reset) ▾';
+      }
+      this.dom.activeParadigmBadge.removeAttribute('title');
+    }
 
     this.updateEraProgressBar();
   }
@@ -611,7 +923,8 @@ export class GameUI {
       const isUnlocked = this.engine.unlockedMilestones.has(ms.id);
       const isAvailable = this.engine.isMilestoneAvailable(ms.id);
       const isSelected = this.engine.selectedMilestoneId === ms.id;
-      const canAfford = this.engine.insights >= ms.cost;
+      const cost = this.engine.getMilestoneCost(ms.id);
+      const canAfford = this.engine.insights >= cost;
 
       let statusClass = 'locked';
       let actionControl = '<span class="ms-state-btn status-locked">🔒 Locked</span>';
@@ -621,7 +934,7 @@ export class GameUI {
         actionControl = '<span class="ms-state-btn status-unlocked">✓ Discovered</span>';
       } else if (isAvailable) {
         statusClass = 'available';
-        actionControl = `<button class="btn-unlock-ms" ${!canAfford ? 'disabled' : ''}>Unlock: ${GameUI.formatNumber(ms.cost)} 💡</button>`;
+        actionControl = `<button class="btn-unlock-ms" ${!canAfford ? 'disabled' : ''}>Unlock: ${GameUI.formatNumber(cost)} 💡</button>`;
       }
 
       const card = document.createElement('div');

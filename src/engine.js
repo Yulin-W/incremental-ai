@@ -3,7 +3,7 @@
  * Core state management, tick calculations, economic formulas, and milestone unlock engine.
  */
 
-import { ERAS, GENERATORS, MILESTONES } from './historyData.js';
+import { ERAS, GENERATORS, MILESTONES, PARADIGMS, SINGULARITY_EVENT } from './historyData.js';
 
 export class GameEngine {
   constructor() {
@@ -16,11 +16,21 @@ export class GameEngine {
     this.bulkBuyMode = 1; // 1, 10, or 'max'
     this.selectedMilestoneId = "ms_talos"; // Default selected milestone for Codex
 
+    // Replayability & AI Paradigm Focus (v1.7.0)
+    this.activeParadigmId = null; // null for Standard Run, or paradigm_* id
+    this.completedParadigms = new Set();
+    this.replayCount = 0;
+    this.hasAchievedSingularity = false;
+    this.hasEverUnlockedSingularity = false; // Remains true permanently once cleared
+    this.cyberneticBoostTimer = 0; // seconds remaining for cybernetic click burst
+
     // Event listeners
     this.listeners = {
       stateChange: [],
       eraUnlock: [],
-      milestoneUnlock: []
+      milestoneUnlock: [],
+      singularityReached: [],
+      paradigmShift: []
     };
 
     // Initialize generators
@@ -45,12 +55,30 @@ export class GameEngine {
   }
 
   // ==========================================
+  // PARADIGM & DOCTRINE ACCESSORS
+  // ==========================================
+
+  getActiveParadigm() {
+    if (!this.activeParadigmId) return null;
+    return PARADIGMS.find(p => p.id === this.activeParadigmId) || null;
+  }
+
+  canTriggerParadigmShift() {
+    return this.hasEverUnlockedSingularity || this.hasAchievedSingularity || this.replayCount > 0 || this.completedParadigms.size > 0;
+  }
+
+  // ==========================================
   // ECONOMIC & MULTIPLIER CALCULATIONS
   // ==========================================
 
   getClickPower() {
     let baseClick = 1;
     let multiplier = 1;
+
+    // Cybernetics Paradigm: 8x active Think click power
+    if (this.activeParadigmId === 'paradigm_cybernetic') {
+      multiplier *= 8;
+    }
 
     for (const msId of this.unlockedMilestones) {
       const ms = MILESTONES.find(m => m.id === msId);
@@ -64,6 +92,17 @@ export class GameEngine {
 
   getGlobalMultiplier() {
     let globalMult = 1;
+
+    // Paradigm Global Modifiers
+    if (this.activeParadigmId === 'paradigm_probabilistic') {
+      // Compounding 4% per unlocked milestone
+      globalMult *= Math.pow(1.04, this.unlockedMilestones.size);
+    } else if (this.activeParadigmId === 'paradigm_connectionist') {
+      globalMult *= 1.35;
+    } else if (this.activeParadigmId === 'paradigm_symbolic') {
+      globalMult *= 1.25;
+    }
+
     for (const msId of this.unlockedMilestones) {
       const ms = MILESTONES.find(m => m.id === msId);
       if (ms && ms.effects && ms.effects.globalMultiplier) {
@@ -75,11 +114,28 @@ export class GameEngine {
 
   getGeneratorMultiplier(generatorId) {
     let genMult = 1;
+    const gen = GENERATORS.find(g => g.id === generatorId);
+
+    // Symbolic Paradigm: +150% output (2.5x) for Epochs 1-3
+    if (this.activeParadigmId === 'paradigm_symbolic' && gen && gen.eraId <= 3) {
+      genMult *= 2.5;
+    }
+
+    // Cybernetics Paradigm: Active click burst grants +50% (1.5x) to hardware
+    if (this.activeParadigmId === 'paradigm_cybernetic' && this.cyberneticBoostTimer > 0) {
+      genMult *= 1.5;
+    }
+
     for (const msId of this.unlockedMilestones) {
       const ms = MILESTONES.find(m => m.id === msId);
       if (ms && ms.effects && ms.effects.generatorBonus) {
         if (ms.effects.generatorBonus.generatorId === generatorId) {
-          genMult *= ms.effects.generatorBonus.factor;
+          let factor = ms.effects.generatorBonus.factor;
+          // Connectionist Paradigm: 40% boosted milestone synergies
+          if (this.activeParadigmId === 'paradigm_connectionist') {
+            factor *= 1.4;
+          }
+          genMult *= factor;
         }
       }
     }
@@ -107,20 +163,39 @@ export class GameEngine {
     return total;
   }
 
+  getGeneratorBaseCost(generatorId) {
+    const gen = GENERATORS.find(g => g.id === generatorId);
+    if (!gen) return Infinity;
+
+    let baseCost = gen.baseCost;
+
+    // Cybernetics Paradigm: 25% discount across all generators
+    if (this.activeParadigmId === 'paradigm_cybernetic') {
+      baseCost *= 0.75;
+    }
+    // Connectionist Paradigm: 30% discount for mid-to-late Epochs 4-7
+    else if (this.activeParadigmId === 'paradigm_connectionist' && gen.eraId >= 4) {
+      baseCost *= 0.70;
+    }
+
+    return Math.floor(baseCost);
+  }
+
   getGeneratorCost(generatorId, amount = 1) {
     const gen = GENERATORS.find(g => g.id === generatorId);
     if (!gen) return Infinity;
 
+    const baseCost = this.getGeneratorBaseCost(generatorId);
     const currentCount = this.generators[generatorId] || 0;
 
     if (amount === 1) {
-      return Math.floor(gen.baseCost * Math.pow(1.15, currentCount));
+      return Math.floor(baseCost * Math.pow(1.15, currentCount));
     }
 
     if (typeof amount === 'number' && amount > 1) {
       let totalCost = 0;
       for (let i = 0; i < amount; i++) {
-        totalCost += Math.floor(gen.baseCost * Math.pow(1.15, currentCount + i));
+        totalCost += Math.floor(baseCost * Math.pow(1.15, currentCount + i));
       }
       return totalCost;
     }
@@ -131,7 +206,7 @@ export class GameEngine {
       let tempInsights = this.insights;
 
       while (true) {
-        const nextCost = Math.floor(gen.baseCost * Math.pow(1.15, currentCount + maxAffordable));
+        const nextCost = Math.floor(baseCost * Math.pow(1.15, currentCount + maxAffordable));
         if (tempInsights >= nextCost) {
           tempInsights -= nextCost;
           totalCost += nextCost;
@@ -147,6 +222,24 @@ export class GameEngine {
     return Infinity;
   }
 
+  getMilestoneCost(milestoneId) {
+    const ms = MILESTONES.find(m => m.id === milestoneId);
+    if (!ms) return Infinity;
+
+    let cost = ms.cost;
+
+    // Symbolic Paradigm: 35% discount on early Epochs 1-3 milestones
+    if (this.activeParadigmId === 'paradigm_symbolic' && ms.eraId <= 3) {
+      cost *= 0.65;
+    }
+    // Probabilistic Paradigm: 20% discount on all milestones throughout history
+    else if (this.activeParadigmId === 'paradigm_probabilistic') {
+      cost *= 0.80;
+    }
+
+    return Math.floor(cost);
+  }
+
   // ==========================================
   // GAME ACTIONS
   // ==========================================
@@ -155,19 +248,29 @@ export class GameEngine {
     const clickGain = this.getClickPower();
     this.insights += clickGain;
     this.totalInsightsEarned += clickGain;
+
+    // Cybernetics active boost refresh
+    if (this.activeParadigmId === 'paradigm_cybernetic') {
+      this.cyberneticBoostTimer = 15.0; // 15 seconds boost refreshed on click
+    }
+
     this.checkEraProgression();
     this.emit('stateChange');
     return clickGain;
   }
 
-  doubleInsights() {
+  multiplyInsights(factor = 10) {
     // If current insights is 0, give an initial boost of 10 for rapid test start
-    const gain = this.insights > 0 ? this.insights : 10;
+    const gain = this.insights > 0 ? this.insights * (factor - 1) : 10;
     this.insights += gain;
     this.totalInsightsEarned += gain;
     this.checkEraProgression();
     this.emit('stateChange');
     return this.insights;
+  }
+
+  doubleInsights() {
+    return this.multiplyInsights(10);
   }
 
   setBulkBuyMode(mode) {
@@ -224,8 +327,9 @@ export class GameEngine {
     if (!ms) return false;
     if (!this.isMilestoneAvailable(milestoneId)) return false;
 
-    if (this.insights >= ms.cost) {
-      this.insights -= ms.cost;
+    const cost = this.getMilestoneCost(milestoneId);
+    if (this.insights >= cost) {
+      this.insights -= cost;
       this.unlockedMilestones.add(milestoneId);
       this.selectedMilestoneId = milestoneId;
       this.checkEraProgression();
@@ -244,23 +348,87 @@ export class GameEngine {
 
   checkEraProgression() {
     const nextEra = ERAS.find(e => e.id === this.currentEraId + 1);
-    if (!nextEra) return;
+    if (nextEra) {
+      // Era advances strictly when all milestones of the current era are discovered
+      const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.currentEraId);
+      const allMilestonesUnlocked = currentEraMilestones.length > 0 && currentEraMilestones.every(m => this.unlockedMilestones.has(m.id));
 
-    // Era advances strictly when all milestones of the current era are discovered
-    const currentEraMilestones = MILESTONES.filter(m => m.eraId === this.currentEraId);
-    const allMilestonesUnlocked = currentEraMilestones.length > 0 && currentEraMilestones.every(m => this.unlockedMilestones.has(m.id));
+      if (allMilestonesUnlocked) {
+        this.currentEraId = nextEra.id;
+        this.emit('eraUnlock', nextEra);
+        // Recursively check in case subsequent era milestones were already satisfied
+        this.checkEraProgression();
+      }
+    }
 
-    if (allMilestonesUnlocked) {
-      this.currentEraId = nextEra.id;
-      this.emit('eraUnlock', nextEra);
-      // Recursively check in case subsequent era milestones were already satisfied
-      this.checkEraProgression();
+    // Check for Technological Singularity (All 28 Milestones Unlocked / Epoch 7 complete)
+    const finalEraMilestones = MILESTONES.filter(m => m.eraId === 7);
+    const allFinalUnlocked = finalEraMilestones.length > 0 && finalEraMilestones.every(m => this.unlockedMilestones.has(m.id));
+
+    if (allFinalUnlocked && !this.hasAchievedSingularity) {
+      this.hasAchievedSingularity = true;
+      this.hasEverUnlockedSingularity = true;
+      this.emit('singularityReached', SINGULARITY_EVENT);
     }
   }
 
   initStartingEra() {
     const initialEra = ERAS.find(e => e.id === this.currentEraId) || ERAS[0];
     this.emit('eraUnlock', initialEra);
+  }
+
+  // ==========================================
+  // PARADIGM SHIFT (SINGULARITY REPLAY)
+  // ==========================================
+
+  triggerParadigmShift(paradigmId = null) {
+    this.insights = 0;
+    this.totalInsightsEarned = 0;
+    this.currentEraId = 1;
+    this.unlockedMilestones.clear();
+
+    GENERATORS.forEach(g => {
+      this.generators[g.id] = 0;
+    });
+
+    this.activeParadigmId = paradigmId;
+    if (paradigmId) {
+      this.completedParadigms.add(paradigmId);
+    }
+
+    this.replayCount++;
+    this.hasEverUnlockedSingularity = true;
+    this.hasAchievedSingularity = false;
+    this.cyberneticBoostTimer = 0;
+    this.selectedMilestoneId = "ms_talos";
+
+    this.emit('paradigmShift', {
+      paradigmId: this.activeParadigmId,
+      replayCount: this.replayCount
+    });
+
+    this.initStartingEra();
+    this.emit('stateChange');
+    return true;
+  }
+
+  // Pre-clear standard timeline reset
+  resetTimeline() {
+    this.insights = 0;
+    this.totalInsightsEarned = 0;
+    this.currentEraId = 1;
+    this.unlockedMilestones.clear();
+
+    GENERATORS.forEach(g => {
+      this.generators[g.id] = 0;
+    });
+
+    this.cyberneticBoostTimer = 0;
+    this.selectedMilestoneId = "ms_talos";
+
+    this.initStartingEra();
+    this.emit('stateChange');
+    return true;
   }
 
   // ==========================================
@@ -275,6 +443,11 @@ export class GameEngine {
     const deltaSeconds = Math.min(deltaMs / 1000, 1.0);
 
     if (deltaSeconds > 0) {
+      // Decrement cybernetics boost timer if active
+      if (this.cyberneticBoostTimer > 0) {
+        this.cyberneticBoostTimer = Math.max(0, this.cyberneticBoostTimer - deltaSeconds);
+      }
+
       const passiveRate = this.getTotalRate();
       const passiveGain = passiveRate * deltaSeconds;
 
@@ -286,3 +459,4 @@ export class GameEngine {
     }
   }
 }
+

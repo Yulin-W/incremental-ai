@@ -105,6 +105,9 @@ export class HelpModalController {
 
   close() {
     if (!this.ui.dom.helpModal) return;
+    if (typeof document !== 'undefined' && document.activeElement && this.ui.dom.helpModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     this.ui.isHelpModalOpen = false;
     this.ui.dom.helpModal.classList.remove('active');
     this.ui.dom.helpModal.setAttribute('aria-hidden', 'true');

@@ -88,6 +88,9 @@ export class EventModalController {
 
   close() {
     if (!this.ui.dom.eventModal || !this.ui.isEventModalOpen) return;
+    if (typeof document !== 'undefined' && document.activeElement && this.ui.dom.eventModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     this.ui.dom.eventModal.classList.remove("active");
     this.ui.dom.eventModal.setAttribute("aria-hidden", "true");
     setTimeout(() => {

@@ -103,6 +103,9 @@ export class ParadigmModalController {
 
   closeParadigmModal() {
     if (!this.ui.dom.paradigmModal) return;
+    if (typeof document !== 'undefined' && document.activeElement && this.ui.dom.paradigmModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     this.ui.isParadigmModalOpen = false;
     this.ui.dom.paradigmModal.classList.remove('active');
     this.ui.dom.paradigmModal.setAttribute('aria-hidden', 'true');
@@ -325,6 +328,9 @@ export class ParadigmModalController {
 
   closeConfirmModal() {
     if (!this.ui.dom.paradigmConfirmModal) return;
+    if (typeof document !== 'undefined' && document.activeElement && this.ui.dom.paradigmConfirmModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     this.ui.isParadigmConfirmOpen = false;
     this.ui.dom.paradigmConfirmModal.classList.remove('active');
     this.ui.dom.paradigmConfirmModal.setAttribute('aria-hidden', 'true');

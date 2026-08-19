@@ -87,6 +87,9 @@ export class MultiTabCoordinator {
 
   resumeGame() {
     if (this.ui.dom.multiTabOverlay) {
+      if (typeof document !== 'undefined' && document.activeElement && this.ui.dom.multiTabOverlay.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
       this.ui.dom.multiTabOverlay.classList.remove('active');
       this.ui.dom.multiTabOverlay.setAttribute('aria-hidden', 'true');
       setTimeout(() => {

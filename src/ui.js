@@ -5,7 +5,7 @@
 
 import { GameEngine } from './engine.js';
 import { ERAS, EPOCH_EVENTS, ERA_EVENTS } from './data/index.js';
-import { isDebugModeActive, formatNumber, formatDuration } from './ui/utils/formatters.js';
+import { isDebugModeActive, formatNumber, formatDuration, trackAnalyticsEvent } from './ui/utils/formatters.js';
 import { ToastManager } from './ui/feedback/toast.js';
 import { spawnClickParticle as spawnParticle } from './ui/feedback/particles.js';
 import { ThemeManager } from './ui/systems/themeManager.js';
@@ -218,14 +218,17 @@ export class GameUI {
       // Paradox-Style Historical Event Modal Dialog
       eventModal: document.getElementById('event-modal'),
       btnCloseEvent: document.getElementById('btn-close-event'),
-      btnDismissEvent: document.getElementById('btn-dismiss-event'),
-      eventModalHeroBadge: document.querySelector('.event-modal-header .event-category-badge'),
-      eventModalEpochPill: document.querySelector('.event-modal-header .event-epoch-pill'),
+      btnEventAcknowledge: document.getElementById('btn-event-acknowledge'),
+      btnDismissEvent: document.getElementById('btn-event-acknowledge'),
+      eventModalCategory: document.getElementById('event-modal-category') || document.querySelector('.event-modal-header .event-category-badge'),
+      eventModalEpochPill: document.getElementById('event-modal-epoch-pill') || document.querySelector('.event-modal-header .event-epoch-pill'),
+      eventModalIcon: document.getElementById('event-modal-icon'),
       eventModalTitle: document.getElementById('event-modal-title'),
-      eventModalSubtitle: document.querySelector('.event-modal-subtitle'),
+      eventModalSubtitle: document.getElementById('event-modal-subtitle') || document.querySelector('.event-modal-subtitle'),
       eventModalNarrative: document.getElementById('event-modal-narrative'),
       eventModalQuoteText: document.getElementById('event-modal-quote-text'),
       eventModalQuoteAuthor: document.getElementById('event-modal-quote-author'),
+      eventModalBtnText: document.getElementById('event-modal-btn-text'),
 
       // Paradigm Shift / Singularity Modal Dialog
       paradigmModal: document.getElementById('paradigm-modal'),
@@ -511,6 +514,10 @@ export class GameUI {
     this.engine.on('milestoneUnlock', (milestone) => {
       const localizedMs = i18n.getMilestone(milestone.id) || milestone;
       this.showToast(i18n.t('ui.breakthroughToast'), localizedMs.title, '🔬');
+      trackAnalyticsEvent('milestone_unlocked', {
+        milestone_id: milestone.id,
+        epoch_id: milestone.eraId || milestone.epochId
+      });
     });
 
     this.engine.on('eraUnlock', (era) => {
@@ -521,6 +528,10 @@ export class GameUI {
         '⏳'
       );
       this.updateTheme(era.themeClass);
+      trackAnalyticsEvent('epoch_unlocked', {
+        epoch_id: era.id,
+        epoch_name: era.name
+      });
 
       const eventData = ERA_EVENTS[era.id] || EPOCH_EVENTS[era.id];
       if (eventData) {
@@ -534,6 +545,9 @@ export class GameUI {
         i18n.t('ui.singularityToastMsg'),
         '🌌'
       );
+      trackAnalyticsEvent('singularity_achieved', {
+        replay_count: this.engine.paradigmCount || 0
+      });
       this.openParadigmModal();
     });
 
@@ -546,6 +560,9 @@ export class GameUI {
         i18n.t('ui.paradigmActivatedMsg', { name }),
         '🚀'
       );
+      trackAnalyticsEvent('paradigm_shift', {
+        paradigm_id: this.engine.activeParadigmId || 'standard'
+      });
     });
   }
 

@@ -38,3 +38,20 @@ export function formatDuration(totalSeconds) {
   const remM = m % 60;
   return remM > 0 ? `${h}h ${remM}m` : `${h}h`;
 }
+
+/**
+ * Dispatch a custom telemetry event to Google Analytics (GA4) if available.
+ * Fails safely in offline, sandboxed, or test environments.
+ * @param {string} eventName
+ * @param {Object} [params={}]
+ */
+export function trackAnalyticsEvent(eventName, params = {}) {
+  try {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', eventName, params);
+    }
+  } catch (_err) {
+    // Fail silently
+  }
+}
+

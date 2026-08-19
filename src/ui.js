@@ -18,7 +18,7 @@ import { renderHeader, updateEraProgressBar } from './ui/components/headerRender
 import { renderGenerators, updateGeneratorAffordances } from './ui/components/productionRenderer.js';
 import { renderTimeline, updateMilestoneAffordances } from './ui/components/timelineRenderer.js';
 import { renderCodex } from './ui/components/codexRenderer.js';
-import { i18n, SUPPORTED_LANGUAGES } from './locales/index.js';
+import { i18n, SUPPORTED_LANGUAGES, getFlagSvg } from './locales/index.js';
 
 export class GameUI {
   constructor() {
@@ -276,7 +276,7 @@ export class GameUI {
       opt.dataset.lang = lang.code;
       opt.setAttribute('role', 'menuitem');
       opt.innerHTML = `
-        <span class="option-flag">${lang.flag}</span>
+        <span class="option-flag">${getFlagSvg(lang.code)}</span>
         <span class="option-name">${lang.name}</span>
         <span class="option-native">${lang.nativeName}</span>
         ${lang.code === currentLang ? '<span class="option-check">✓</span>' : ''}
@@ -295,7 +295,9 @@ export class GameUI {
 
   updateLanguageButtonDisplay(langCode) {
     const langObj = SUPPORTED_LANGUAGES.find(l => l.code === langCode) || SUPPORTED_LANGUAGES[0];
-    if (this.dom.currentLangFlag) this.dom.currentLangFlag.textContent = langObj.flag;
+    if (this.dom.currentLangFlag) {
+      this.dom.currentLangFlag.innerHTML = getFlagSvg(langCode);
+    }
     if (this.dom.currentLangCode) this.dom.currentLangCode.textContent = langObj.code.toUpperCase();
 
     if (this.dom.languageDropdown) {

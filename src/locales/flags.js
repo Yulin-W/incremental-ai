@@ -1,0 +1,21 @@
+/**
+ * flags.js
+ * Crisp, cross-browser vector SVG country flags.
+ * Fixes missing country flag emoji rendering in Chromium/Chrome and Edge on Windows.
+ */
+
+export const FLAG_SVGS = {
+  en: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="20" height="13" class="flag-icon" aria-hidden="true"><clipPath id="uk-clip"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="uk-diag"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#uk-clip)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-diag)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>`,
+  fr: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="10" height="20" fill="#002654"/><rect x="10" width="10" height="20" fill="#FFFFFF"/><rect x="20" width="10" height="20" fill="#CE1126"/></svg>`,
+  it: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="10" height="20" fill="#008C45"/><rect x="10" width="10" height="20" fill="#FFFFFF"/><rect x="20" width="10" height="20" fill="#CD212A"/></svg>`,
+  de: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="30" height="6.67" fill="#000000"/><rect y="6.67" width="30" height="6.67" fill="#DD0000"/><rect y="13.34" width="30" height="6.67" fill="#FFCC00"/></svg>`,
+  es: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="30" height="5" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/><rect y="15" width="30" height="5" fill="#AA151B"/></svg>`,
+  zh: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="30" height="20" fill="#DE2910"/><path d="M5,2 L6.18,5.62 L3.09,3.38 L6.91,3.38 L3.82,5.62 Z" fill="#FFDE00"/><polygon points="10,2 10.3,3 9.5,2.4 10.5,2.4 9.7,3" fill="#FFDE00"/><polygon points="12,4 12.3,5 11.5,4.4 12.5,4.4 11.7,5" fill="#FFDE00"/><polygon points="12,7 12.3,8 11.5,7.4 12.5,7.4 11.7,8" fill="#FFDE00"/><polygon points="10,9 10.3,10 9.5,9.4 10.5,9.4 9.7,10" fill="#FFDE00"/></svg>`,
+  ja: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="30" height="20" fill="#FFFFFF"/><circle cx="15" cy="10" r="6" fill="#BC002D"/></svg>`,
+  ko: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="30" height="20" fill="#FFFFFF"/><circle cx="15" cy="10" r="4.5" fill="#CD2E3A"/><path d="M10.5,10 A4.5,4.5 0 0,0 19.5,10 A2.25,2.25 0 0,0 15,10 A2.25,2.25 0 0,1 10.5,10" fill="#0047A0"/><g stroke="#000" stroke-width="0.75"><line x1="7" y1="4" x2="9" y2="6"/><line x1="7.7" y1="3.3" x2="9.7" y2="5.3"/><line x1="6.3" y1="4.7" x2="8.3" y2="6.7"/><line x1="21" y1="14" x2="23" y2="16"/><line x1="21.7" y1="13.3" x2="23.7" y2="15.3"/><line x1="20.3" y1="14.7" x2="22.3" y2="16.7"/><line x1="21" y1="6" x2="23" y2="4"/><line x1="21.7" y1="6.7" x2="23.7" y2="4.7"/><line x1="20.3" y1="5.3" x2="22.3" y2="3.3"/><line x1="7" y1="16" x2="9" y2="14"/><line x1="7.7" y1="16.7" x2="9.7" y2="14.7"/><line x1="6.3" y1="15.3" x2="8.3" y2="13.3"/></g></svg>`,
+  el: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 18" width="20" height="13" class="flag-icon" aria-hidden="true"><rect width="27" height="18" fill="#0D5EAF"/><rect y="2" width="27" height="2" fill="#FFFFFF"/><rect y="6" width="27" height="2" fill="#FFFFFF"/><rect y="10" width="27" height="2" fill="#FFFFFF"/><rect y="14" width="27" height="2" fill="#FFFFFF"/><rect width="10" height="10" fill="#0D5EAF"/><rect x="4" width="2" height="10" fill="#FFFFFF"/><rect y="4" width="10" height="2" fill="#FFFFFF"/></svg>`
+};
+
+export function getFlagSvg(langCode) {
+  return FLAG_SVGS[langCode] || FLAG_SVGS.en;
+}

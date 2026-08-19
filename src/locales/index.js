@@ -33,4 +33,5 @@ export const SUPPORTED_LANGUAGES = [
 ];
 
 export { default as i18n } from './i18n.js';
+export { FLAG_SVGS, getFlagSvg } from './flags.js';
 

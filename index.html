@@ -359,22 +359,40 @@
           <span id="confirm-warning-icon">ℹ️</span>
           <span id="confirm-warning-text">Current insights, generators, and milestone discoveries will reset to Epoch 1.</span>
         </div>
-
-        <div id="confirm-purge-option-container" class="confirm-purge-option-container" style="display: none;">
-          <button id="btn-purge-from-simple" class="btn-subtle-purge" type="button">
-            <span>🧹 Want a clean slate? Wipe all local save data completely & Hard Reset →</span>
-          </button>
-        </div>
       </div>
 
       <footer class="modal-footer paradigm-confirm-footer">
-        <button id="btn-cancel-confirm" class="btn-confirm-cancel">
-          <span>✕ Stay in Current Timeline</span>
-        </button>
-        <button id="btn-execute-shift" class="btn-confirm-execute">
-          <span>🚀 Confirm & Reincarnate →</span>
-        </button>
+        <div class="paradigm-confirm-actions-row">
+          <button id="btn-cancel-confirm" class="btn-confirm-cancel">
+            <span>✕ Stay in Current Timeline</span>
+          </button>
+          <button id="btn-execute-shift" class="btn-confirm-execute">
+            <span>🚀 Confirm & Reincarnate →</span>
+          </button>
+        </div>
+        <div id="confirm-purge-option-container" class="confirm-purge-option-container" style="display: none;">
+          <button id="btn-purge-from-simple" class="btn-paradigm-purge" type="button" aria-label="Clear All Saved Memory and Hard Reset">
+            <span>🧹 Clear All Saved Memory & Hard Reset (Wipe Local Storage)</span>
+          </button>
+        </div>
       </footer>
+    </div>
+  </div>
+
+  <!-- Multi-Tab Protection Lock Overlay -->
+  <div id="multi-tab-overlay" class="multi-tab-overlay" aria-hidden="true" style="display: none;">
+    <div class="multi-tab-card" role="dialog" aria-modal="true" aria-labelledby="multi-tab-title">
+      <div class="multi-tab-icon">⏸️</div>
+      <h2 id="multi-tab-title" class="multi-tab-title">Active in Another Tab</h2>
+      <p class="multi-tab-desc">
+        Incremental AI is currently active in another window or tab. The game loop in this tab has been safely paused to prevent save conflicts and duplicate progress.
+      </p>
+      <div class="multi-tab-action">
+        <button id="btn-resume-tab" class="btn-resume-tab">
+          <span>▶️</span>
+          <span>Resume in this Tab</span>
+        </button>
+      </div>
     </div>
   </div>
 

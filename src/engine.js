@@ -7,6 +7,7 @@ import { ERAS, GENERATORS, MILESTONES, PARADIGMS, SINGULARITY_EVENT } from './hi
 
 export const SAVE_STORAGE_KEY = 'incremental_ai_save_v1';
 export const SAVE_SCHEMA_VERSION = 1;
+export const MAX_OFFLINE_SECONDS = 14400; // 4 hours maximum offline earnings cap
 
 export class GameEngine {
   constructor() {
@@ -18,6 +19,7 @@ export class GameEngine {
     this.unlockedMilestones = new Set(); // milestoneId
     this.bulkBuyMode = 1; // 1, 10, or 'max'
     this.selectedMilestoneId = "ms_talos"; // Default selected milestone for Codex
+    this.lastSaveTimestamp = null; // Timestamp of loaded save for offline earnings calculation
 
     // Replayability & AI Paradigm Focus (v1.7.0)
     this.activeParadigmId = null; // null for Standard Run, or paradigm_* id
@@ -513,6 +515,11 @@ export class GameEngine {
         this.cyberneticBoostTimer = typeof run.cyberneticBoostTimer === 'number' ? Math.max(0, run.cyberneticBoostTimer) : 0;
       }
 
+      // Record timestamp of loaded save state
+      this.lastSaveTimestamp = typeof saveData.timestamp === 'number' && !isNaN(saveData.timestamp)
+        ? saveData.timestamp
+        : null;
+
       this.emit('stateChange');
       return true;
     } catch (e) {
@@ -568,14 +575,44 @@ export class GameEngine {
     this.cyberneticBoostTimer = 0;
     this.selectedMilestoneId = "ms_talos";
     this.bulkBuyMode = 1;
+    this.lastSaveTimestamp = null;
 
     GENERATORS.forEach(g => {
       this.generators[g.id] = 0;
     });
 
-    this.initStartingEra();
     this.emit('stateChange');
     return true;
+  }
+
+  // ==========================================
+  // OFFLINE PROGRESSION ("While You Were Away")
+  // ==========================================
+
+  calculateOfflineProgress(savedTimestamp = this.lastSaveTimestamp) {
+    if (!savedTimestamp || typeof savedTimestamp !== 'number' || isNaN(savedTimestamp)) {
+      return { offlineGain: 0, elapsedSeconds: 0, rawElapsedSeconds: 0, isCapped: false, rate: 0 };
+    }
+
+    const now = Date.now();
+    const rawElapsedSeconds = Math.max(0, (now - savedTimestamp) / 1000);
+    
+    // Ignore micro gaps (< 5s, e.g. quick page refresh) to avoid noisy notifications
+    if (rawElapsedSeconds < 5) {
+      return { offlineGain: 0, elapsedSeconds: rawElapsedSeconds, rawElapsedSeconds, isCapped: false, rate: this.getTotalRate() };
+    }
+
+    const elapsedSeconds = Math.min(rawElapsedSeconds, MAX_OFFLINE_SECONDS);
+    const rate = this.getTotalRate();
+    const offlineGain = rate * elapsedSeconds;
+
+    return {
+      offlineGain: Math.max(0, offlineGain),
+      elapsedSeconds,
+      rawElapsedSeconds,
+      isCapped: rawElapsedSeconds > MAX_OFFLINE_SECONDS,
+      rate
+    };
   }
 
   // ==========================================

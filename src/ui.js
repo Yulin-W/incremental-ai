@@ -8,6 +8,12 @@ import { ERAS, GENERATORS, MILESTONES, ERA_EVENTS, PARADIGMS, SINGULARITY_EVENT 
 
 export class GameUI {
   constructor() {
+    this.tabId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'tab_' + Math.random().toString(36).slice(2) + Date.now();
+    this.isTabActivePrimary = true;
+    this.broadcastChannel = null;
+
     this.engine = new GameEngine();
     this.activeMobileTab = 'production'; // 'production', 'timeline', 'codex'
     this.dom = {};
@@ -21,6 +27,7 @@ export class GameUI {
     this.initDOMReferences();
     this.bindEvents();
     this.setupEngineSubscriptions();
+    this.setupMultiTabChannel();
     this.loadVersion();
     
     // Expose instance for testing / harness access
@@ -39,18 +46,34 @@ export class GameUI {
     if (hasLoadedSave) {
       const currentEra = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
       this.updateTheme(currentEra.themeClass);
+
+      // Offline Progression ("While You Were Away")
+      const offline = this.engine.calculateOfflineProgress();
+      if (offline.offlineGain > 0) {
+        this.engine.insights += offline.offlineGain;
+        this.engine.totalInsightsEarned += offline.offlineGain;
+
+        const durationText = GameUI.formatDuration(offline.elapsedSeconds);
+        const capNotice = offline.isCapped ? ' (4h cap)' : '';
+        this.showToast(
+          '⏰ While You Were Away',
+          `+${GameUI.formatNumber(offline.offlineGain)} 💡 generated over ${durationText}${capNotice}`,
+          '⏳'
+        );
+
+        // Immediate persistence of credited offline earnings
+        this.engine.saveToStorage();
+      }
+    } else {
+      // First-time clean-slate player: Auto-open Help Modal & queue Epoch 1 intro event
+      this.openHelpModal();
+      this.engine.initStartingEra();
+      // Initialize fresh save in storage so future reloads recognize returning player
+      this.engine.saveToStorage();
     }
 
     // Initial Render
     this.renderAll();
-    
-    // Auto-display Help & How-to-Play Modal on game load strictly for new players
-    if (!hasLoadedSave || (this.engine.insights === 0 && this.engine.unlockedMilestones.size === 0 && !this.engine.hasEverUnlockedSingularity)) {
-      this.openHelpModal();
-    }
-
-    // Trigger initial epoch activation (strictly an epoch change/activation trigger)
-    this.engine.initStartingEra();
 
     // Auto-save interval tracking
     this.lastAutoSaveTime = performance.now();
@@ -164,6 +187,10 @@ export class GameUI {
       btnExecuteShift: document.getElementById('btn-execute-shift'),
       btnCloseConfirm: document.getElementById('btn-close-confirm'),
 
+      // Multi-Tab Protection Lock Overlay
+      multiTabOverlay: document.getElementById('multi-tab-overlay'),
+      btnResumeTab: document.getElementById('btn-resume-tab'),
+
       // Toast Container
       toastContainer: document.getElementById('toast-container')
     };
@@ -191,6 +218,20 @@ export class GameUI {
     
     const formatted = (num / Math.pow(10, suffixIndex * 3)).toFixed(decimals);
     return `${formatted} ${suffixes[suffixIndex]}`;
+  }
+
+  static formatDuration(totalSeconds) {
+    if (!totalSeconds || isNaN(totalSeconds) || totalSeconds <= 0) return '0s';
+    const s = Math.floor(totalSeconds);
+    if (s < 60) return `${s}s`;
+    const m = Math.floor(s / 60);
+    const remS = s % 60;
+    if (m < 60) {
+      return remS > 0 ? `${m}m ${remS}s` : `${m}m`;
+    }
+    const h = Math.floor(m / 60);
+    const remM = m % 60;
+    return remM > 0 ? `${h}h ${remM}m` : `${h}h`;
   }
 
   // ==========================================
@@ -377,13 +418,20 @@ export class GameUI {
       });
     }
 
-    // Window Lifecycle Persistence Hooks
+    // Multi-Tab Takeover Resume Control
+    if (this.dom.btnResumeTab) {
+      this.dom.btnResumeTab.addEventListener('click', () => this.resumeGameFromMultiTab());
+    }
+
+    // Window Lifecycle Persistence Hooks (guarded against inactive duplicate tabs)
     window.addEventListener('beforeunload', () => {
-      this.engine.saveToStorage();
+      if (this.isTabActivePrimary) {
+        this.engine.saveToStorage();
+      }
     });
 
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
+      if (document.visibilityState === 'hidden' && this.isTabActivePrimary) {
         this.engine.saveToStorage();
       }
     });
@@ -421,6 +469,84 @@ export class GameUI {
         this.closeHelpModal();
       }
     });
+  }
+
+  // ==========================================
+  // MULTI-TAB SESSION COORDINATION (BroadcastChannel)
+  // ==========================================
+
+  setupMultiTabChannel() {
+    if (typeof window === 'undefined') return;
+
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        this.broadcastChannel = new BroadcastChannel('incremental_ai_session');
+        this.broadcastChannel.onmessage = (event) => {
+          if (!event || !event.data) return;
+          const { type, tabId } = event.data;
+          if (type === 'CLAIM_PRIMARY' && tabId !== this.tabId) {
+            this.pauseGameForMultiTab();
+          }
+        };
+
+        // Broadcast primary claim for newly opened tab
+        this.broadcastChannel.postMessage({ type: 'CLAIM_PRIMARY', tabId: this.tabId });
+      } catch (err) {
+        console.warn('BroadcastChannel initialization fallback:', err);
+      }
+    }
+
+    // Storage event fallback for cross-tab isolation
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'incremental_ai_active_tab' && e.newValue && e.newValue !== this.tabId) {
+        this.pauseGameForMultiTab();
+      }
+    });
+
+    try {
+      window.localStorage.setItem('incremental_ai_active_tab', this.tabId);
+    } catch (e) {}
+  }
+
+  pauseGameForMultiTab() {
+    this.isTabActivePrimary = false;
+    if (this.dom.multiTabOverlay) {
+      this.dom.multiTabOverlay.style.display = 'flex';
+      void this.dom.multiTabOverlay.offsetHeight;
+      this.dom.multiTabOverlay.classList.add('active');
+      this.dom.multiTabOverlay.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  resumeGameFromMultiTab() {
+    if (this.dom.multiTabOverlay) {
+      this.dom.multiTabOverlay.classList.remove('active');
+      this.dom.multiTabOverlay.setAttribute('aria-hidden', 'true');
+      setTimeout(() => {
+        if (!this.dom.multiTabOverlay.classList.contains('active')) {
+          this.dom.multiTabOverlay.style.display = 'none';
+        }
+      }, 250);
+    }
+
+    // Re-claim primary ownership
+    this.isTabActivePrimary = true;
+    if (this.broadcastChannel) {
+      try {
+        this.broadcastChannel.postMessage({ type: 'CLAIM_PRIMARY', tabId: this.tabId });
+      } catch (e) {}
+    }
+    try {
+      window.localStorage.setItem('incremental_ai_active_tab', this.tabId);
+    } catch (e) {}
+
+    // Reload latest save state from storage
+    this.engine.loadFromStorage();
+    const currentEra = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
+    this.updateTheme(currentEra.themeClass);
+    this.renderAll();
+    this.engine.lastTickTime = performance.now();
+    this.showToast('▶️ Resumed in This Tab', 'Latest timeline progress has been synchronized.', '⚡');
   }
 
   // ==========================================
@@ -662,6 +788,15 @@ export class GameUI {
     if (this.pendingParadigmChoice === 'purge_all_data') {
       this.closeConfirmModal();
       this.closeParadigmModal();
+
+      // Reset any active event modal and flush queued event dialogs
+      this.isEventModalOpen = false;
+      this.eventQueue = [];
+      if (this.dom.eventModal) {
+        this.dom.eventModal.classList.remove('active');
+        this.dom.eventModal.style.display = 'none';
+      }
+
       this.engine.purgeAllData();
       const currentEra = ERAS.find(e => e.id === this.engine.currentEraId) || ERAS[0];
       this.updateTheme(currentEra.themeClass);
@@ -669,6 +804,12 @@ export class GameUI {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       this.renderAll();
       this.showToast('🧹 Memory Purged', 'All local save data and timeline progress have been completely reset.', '✨');
+      
+      // Clean slate onboarding: Open Help Modal first, then queue Epoch 1 event
+      setTimeout(() => {
+        this.openHelpModal();
+        this.engine.initStartingEra();
+      }, 300);
       return;
     }
 
@@ -1153,6 +1294,12 @@ export class GameUI {
   // MAIN GAME LOOP (requestAnimationFrame)
   // ==========================================
   gameLoop(timestamp) {
+    if (!this.isTabActivePrimary) {
+      // Inactive duplicate tab: wait without ticking or saving to protect save integrity
+      requestAnimationFrame((ts) => this.gameLoop(ts));
+      return;
+    }
+
     this.engine.tick(timestamp);
     
     // Smooth header tick updates

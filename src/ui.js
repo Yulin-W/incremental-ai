@@ -26,6 +26,9 @@ export class GameUI {
     // Initial Render
     this.renderAll();
     
+    // Auto-display Help & How-to-Play Modal on game load
+    this.openHelpModal();
+
     // Start Animation / Game Loop
     requestAnimationFrame((ts) => this.gameLoop(ts));
   }
@@ -58,6 +61,7 @@ export class GameUI {
       body: document.body,
       // Header
       versionTag: document.querySelector('.version-tag'),
+      btnHelp: document.getElementById('btn-help'),
       eraPillNumber: document.getElementById('era-pill-number'),
       eraPillName: document.getElementById('era-pill-name'),
       eraPillDates: document.getElementById('era-pill-dates'),
@@ -83,6 +87,11 @@ export class GameUI {
       panelProduction: document.getElementById('panel-production'),
       panelTimeline: document.getElementById('panel-timeline'),
       panelCodex: document.getElementById('panel-codex'),
+
+      // Help Modal Dialog
+      helpModal: document.getElementById('help-modal'),
+      btnCloseHelp: document.getElementById('btn-close-help'),
+      btnStartPlaying: document.getElementById('btn-start-playing'),
 
       // Toast Container
       toastContainer: document.getElementById('toast-container')
@@ -212,6 +221,54 @@ export class GameUI {
         this.switchMobileTab(tab);
       });
     });
+
+    // Help Modal Open / Close Controls
+    if (this.dom.btnHelp) {
+      this.dom.btnHelp.addEventListener('click', () => this.openHelpModal());
+    }
+    if (this.dom.btnCloseHelp) {
+      this.dom.btnCloseHelp.addEventListener('click', () => this.closeHelpModal());
+    }
+    if (this.dom.btnStartPlaying) {
+      this.dom.btnStartPlaying.addEventListener('click', () => this.closeHelpModal());
+    }
+    if (this.dom.helpModal) {
+      this.dom.helpModal.addEventListener('click', (e) => {
+        if (e.target === this.dom.helpModal) {
+          this.closeHelpModal();
+        }
+      });
+    }
+
+    // Dismiss Help Modal on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.dom.helpModal && this.dom.helpModal.classList.contains('active')) {
+        this.closeHelpModal();
+      }
+    });
+  }
+
+  // ==========================================
+  // HELP & HOW-TO-PLAY MODAL CONTROLLER
+  // ==========================================
+  openHelpModal() {
+    if (!this.dom.helpModal) return;
+    this.dom.helpModal.style.display = 'flex';
+    // Trigger layout reflow for CSS opacity/transform transition
+    void this.dom.helpModal.offsetHeight;
+    this.dom.helpModal.classList.add('active');
+    this.dom.helpModal.setAttribute('aria-hidden', 'false');
+  }
+
+  closeHelpModal() {
+    if (!this.dom.helpModal) return;
+    this.dom.helpModal.classList.remove('active');
+    this.dom.helpModal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => {
+      if (!this.dom.helpModal.classList.contains('active')) {
+        this.dom.helpModal.style.display = 'none';
+      }
+    }, 250);
   }
 
   switchMobileTab(tab) {

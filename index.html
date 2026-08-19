@@ -58,6 +58,14 @@
           <span id="stat-rate" class="stat-value-rate">+0.0 / s</span>
         </div>
       </div>
+
+      <!-- Header Actions / Utilities -->
+      <div class="header-actions">
+        <button id="btn-help" class="btn-help" title="How to Play & Game Guide" aria-label="Open Game Guide and Help">
+          <span class="btn-help-icon">ℹ️</span>
+          <span class="btn-help-text">Help</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -135,6 +143,74 @@
 
   <!-- Floating Toast Notifications -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Help & How-to-Play Modal Dialog -->
+  <div id="help-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="help-modal-title" style="display: none;">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <div class="modal-header-brand">
+          <span class="modal-logo">🧠</span>
+          <div>
+            <h2 id="help-modal-title" class="modal-title">Incremental AI</h2>
+            <p class="modal-subtitle">The History of Artificial Intelligence</p>
+          </div>
+        </div>
+        <button id="btn-close-help" class="btn-modal-close" aria-label="Close Help Modal" title="Close">✕</button>
+      </header>
+      
+      <div class="modal-body">
+        <!-- Overview Section -->
+        <section class="help-section">
+          <h3 class="help-heading">What is this game?</h3>
+          <p class="help-text">
+            <strong>Incremental AI</strong> is an interactive educational idle game tracing the history of Artificial Intelligence. Journey across <strong>7 Historical Eras</strong>—from ancient automata and mechanical calculators to modern deep learning and autonomous frontier agents.
+          </p>
+        </section>
+
+        <!-- How to Play Section -->
+        <section class="help-section">
+          <h3 class="help-heading">How to Play</h3>
+          <div class="help-steps-grid">
+            <div class="help-step-card">
+              <div class="help-step-icon">💡</div>
+              <div class="help-step-content">
+                <strong>1. Think & Contemplate</strong>
+                <p>Click the <em>Think</em> button to manually generate Insights and begin scientific discovery.</p>
+              </div>
+            </div>
+
+            <div class="help-step-card">
+              <div class="help-step-icon">⚡</div>
+              <div class="help-step-content">
+                <strong>2. Build Production</strong>
+                <p>Purchase historical automation (Water Clocks, Difference Engines, GPUs) for passive Insights/sec.</p>
+              </div>
+            </div>
+
+            <div class="help-step-card">
+              <div class="help-step-icon">⏳</div>
+              <div class="help-step-content">
+                <strong>3. Unlock Milestones</strong>
+                <p>Spend Insights to unlock paradigm shifts, boost multipliers, and advance to new Eras.</p>
+              </div>
+            </div>
+
+            <div class="help-step-card">
+              <div class="help-step-icon">📖</div>
+              <div class="help-step-content">
+                <strong>4. Explore the Codex</strong>
+                <p>Select any milestone to read verified historical lore, scientific context, and academic citations.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="modal-footer">
+        <button id="btn-start-playing" class="btn-modal-primary">Got It — Start Exploring 🚀</button>
+      </footer>
+    </div>
+  </div>
 
   <!-- Vanilla Application Modules -->
   <script type="module" src="src/ui.js"></script>

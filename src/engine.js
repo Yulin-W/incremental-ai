@@ -1,13 +1,31 @@
 /**
  * engine.js
- * Core state management, tick calculations, economic formulas, and milestone unlock engine.
+ * Core state management, tick loop, and game action orchestrator.
+ * Delegates economic formulas, persistence, and offline progression to modular helpers.
  */
 
-import { ERAS, GENERATORS, MILESTONES, PARADIGMS, SINGULARITY_EVENT } from './historyData.js';
+import { ERAS, GENERATORS, MILESTONES, PARADIGMS, SINGULARITY_EVENT } from './data/index.js';
+import {
+  SAVE_STORAGE_KEY,
+  SAVE_SCHEMA_VERSION,
+  MAX_OFFLINE_SECONDS,
+  calculateClickPower,
+  calculateGlobalMultiplier,
+  calculateGeneratorMultiplier,
+  calculateGeneratorRate,
+  calculateTotalRate,
+  calculateGeneratorBaseCost,
+  calculateGeneratorCost,
+  calculateMilestoneCost,
+  serializeEngineState,
+  deserializeEngineState,
+  saveEngineToStorage,
+  loadEngineFromStorage,
+  purgeEngineStorage,
+  calculateOfflineProgress as computeOfflineProgress
+} from './engine/index.js';
 
-export const SAVE_STORAGE_KEY = 'incremental_ai_save_v1';
-export const SAVE_SCHEMA_VERSION = 1;
-export const MAX_OFFLINE_SECONDS = 14400; // 4 hours maximum offline earnings cap
+export { SAVE_STORAGE_KEY, SAVE_SCHEMA_VERSION, MAX_OFFLINE_SECONDS };
 
 export class GameEngine {
   constructor() {
@@ -21,7 +39,7 @@ export class GameEngine {
     this.selectedMilestoneId = "ms_talos"; // Default selected milestone for Codex
     this.lastSaveTimestamp = null; // Timestamp of loaded save for offline earnings calculation
 
-    // Replayability & AI Paradigm Focus (v1.7.0)
+    // Replayability & AI Paradigm Focus
     this.activeParadigmId = null; // null for Standard Run, or paradigm_* id
     this.completedParadigms = new Set();
     this.replayCount = 0;
@@ -43,7 +61,7 @@ export class GameEngine {
       this.generators[g.id] = 0;
     });
 
-    this.lastTickTime = performance.now();
+    this.lastTickTime = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   }
 
   // Subscribe to engine events
@@ -73,176 +91,39 @@ export class GameEngine {
   }
 
   // ==========================================
-  // ECONOMIC & MULTIPLIER CALCULATIONS
+  // ECONOMIC & MULTIPLIER ACCESSORS (DELEGATED)
   // ==========================================
 
   getClickPower() {
-    let baseClick = 1;
-    let multiplier = 1;
-
-    // Cybernetics Paradigm: 8x active Think click power
-    if (this.activeParadigmId === 'paradigm_cybernetic') {
-      multiplier *= 8;
-    }
-
-    for (const msId of this.unlockedMilestones) {
-      const ms = MILESTONES.find(m => m.id === msId);
-      if (ms && ms.effects && ms.effects.clickMultiplier) {
-        multiplier *= ms.effects.clickMultiplier;
-      }
-    }
-
-    return baseClick * multiplier;
+    return calculateClickPower(this);
   }
 
   getGlobalMultiplier() {
-    let globalMult = 1;
-
-    // Paradigm Global Modifiers
-    if (this.activeParadigmId === 'paradigm_probabilistic') {
-      // Compounding 4% per unlocked milestone
-      globalMult *= Math.pow(1.04, this.unlockedMilestones.size);
-    } else if (this.activeParadigmId === 'paradigm_connectionist') {
-      globalMult *= 1.35;
-    } else if (this.activeParadigmId === 'paradigm_symbolic') {
-      globalMult *= 1.25;
-    }
-
-    for (const msId of this.unlockedMilestones) {
-      const ms = MILESTONES.find(m => m.id === msId);
-      if (ms && ms.effects && ms.effects.globalMultiplier) {
-        globalMult *= ms.effects.globalMultiplier;
-      }
-    }
-    return globalMult;
+    return calculateGlobalMultiplier(this);
   }
 
   getGeneratorMultiplier(generatorId) {
-    let genMult = 1;
-    const gen = GENERATORS.find(g => g.id === generatorId);
-
-    // Symbolic Paradigm: +150% output (2.5x) for Epochs 1-3
-    if (this.activeParadigmId === 'paradigm_symbolic' && gen && gen.eraId <= 3) {
-      genMult *= 2.5;
-    }
-
-    // Cybernetics Paradigm: Active click burst grants +50% (1.5x) to hardware
-    if (this.activeParadigmId === 'paradigm_cybernetic' && this.cyberneticBoostTimer > 0) {
-      genMult *= 1.5;
-    }
-
-    for (const msId of this.unlockedMilestones) {
-      const ms = MILESTONES.find(m => m.id === msId);
-      if (ms && ms.effects && ms.effects.generatorBonus) {
-        if (ms.effects.generatorBonus.generatorId === generatorId) {
-          let factor = ms.effects.generatorBonus.factor;
-          // Connectionist Paradigm: 40% boosted milestone synergies
-          if (this.activeParadigmId === 'paradigm_connectionist') {
-            factor *= 1.4;
-          }
-          genMult *= factor;
-        }
-      }
-    }
-    return genMult;
+    return calculateGeneratorMultiplier(this, generatorId);
   }
 
   getGeneratorRate(generatorId) {
-    const gen = GENERATORS.find(g => g.id === generatorId);
-    if (!gen) return 0;
-    const count = this.generators[generatorId] || 0;
-    if (count === 0) return 0;
-
-    const baseOutput = gen.baseRate * count;
-    const specificMult = this.getGeneratorMultiplier(generatorId);
-    const globalMult = this.getGlobalMultiplier();
-
-    return baseOutput * specificMult * globalMult;
+    return calculateGeneratorRate(this, generatorId);
   }
 
   getTotalRate() {
-    let total = 0;
-    for (const gen of GENERATORS) {
-      total += this.getGeneratorRate(gen.id);
-    }
-    return total;
+    return calculateTotalRate(this);
   }
 
   getGeneratorBaseCost(generatorId) {
-    const gen = GENERATORS.find(g => g.id === generatorId);
-    if (!gen) return Infinity;
-
-    let baseCost = gen.baseCost;
-
-    // Cybernetics Paradigm: 25% discount across all generators
-    if (this.activeParadigmId === 'paradigm_cybernetic') {
-      baseCost *= 0.75;
-    }
-    // Connectionist Paradigm: 30% discount for mid-to-late Epochs 4-7
-    else if (this.activeParadigmId === 'paradigm_connectionist' && gen.eraId >= 4) {
-      baseCost *= 0.70;
-    }
-
-    return Math.floor(baseCost);
+    return calculateGeneratorBaseCost(this, generatorId);
   }
 
   getGeneratorCost(generatorId, amount = 1) {
-    const gen = GENERATORS.find(g => g.id === generatorId);
-    if (!gen) return Infinity;
-
-    const baseCost = this.getGeneratorBaseCost(generatorId);
-    const currentCount = this.generators[generatorId] || 0;
-
-    if (amount === 1) {
-      return Math.floor(baseCost * Math.pow(1.15, currentCount));
-    }
-
-    if (typeof amount === 'number' && amount > 1) {
-      let totalCost = 0;
-      for (let i = 0; i < amount; i++) {
-        totalCost += Math.floor(baseCost * Math.pow(1.15, currentCount + i));
-      }
-      return totalCost;
-    }
-
-    if (amount === 'max') {
-      let maxAffordable = 0;
-      let totalCost = 0;
-      let tempInsights = this.insights;
-
-      while (true) {
-        const nextCost = Math.floor(baseCost * Math.pow(1.15, currentCount + maxAffordable));
-        if (tempInsights >= nextCost) {
-          tempInsights -= nextCost;
-          totalCost += nextCost;
-          maxAffordable++;
-        } else {
-          break;
-        }
-      }
-
-      return { count: Math.max(1, maxAffordable), cost: totalCost, canAffordAny: maxAffordable > 0 };
-    }
-
-    return Infinity;
+    return calculateGeneratorCost(this, generatorId, amount);
   }
 
   getMilestoneCost(milestoneId) {
-    const ms = MILESTONES.find(m => m.id === milestoneId);
-    if (!ms) return Infinity;
-
-    let cost = ms.cost;
-
-    // Symbolic Paradigm: 35% discount on early Epochs 1-3 milestones
-    if (this.activeParadigmId === 'paradigm_symbolic' && ms.eraId <= 3) {
-      cost *= 0.65;
-    }
-    // Probabilistic Paradigm: 20% discount on all milestones throughout history
-    else if (this.activeParadigmId === 'paradigm_probabilistic') {
-      cost *= 0.80;
-    }
-
-    return Math.floor(cost);
+    return calculateMilestoneCost(this, milestoneId);
   }
 
   // ==========================================
@@ -442,177 +323,35 @@ export class GameEngine {
   }
 
   // ==========================================
-  // SERIALIZATION & PERSISTENCE
+  // SERIALIZATION & PERSISTENCE (DELEGATED)
   // ==========================================
 
   serializeState() {
-    return {
-      saveVersion: SAVE_SCHEMA_VERSION,
-      timestamp: Date.now(),
-      meta: {
-        replayCount: this.replayCount || 0,
-        completedParadigms: Array.from(this.completedParadigms || []),
-        hasEverUnlockedSingularity: !!this.hasEverUnlockedSingularity,
-        hasAchievedSingularity: !!this.hasAchievedSingularity
-      },
-      run: {
-        insights: typeof this.insights === 'number' && !isNaN(this.insights) ? this.insights : 0,
-        totalInsightsEarned: typeof this.totalInsightsEarned === 'number' && !isNaN(this.totalInsightsEarned) ? this.totalInsightsEarned : 0,
-        currentEraId: this.currentEraId || 1,
-        generators: { ...this.generators },
-        unlockedMilestones: Array.from(this.unlockedMilestones || []),
-        bulkBuyMode: this.bulkBuyMode || 1,
-        selectedMilestoneId: this.selectedMilestoneId || "ms_talos",
-        activeParadigmId: this.activeParadigmId || null,
-        cyberneticBoostTimer: typeof this.cyberneticBoostTimer === 'number' ? Math.max(0, this.cyberneticBoostTimer) : 0
-      }
-    };
+    return serializeEngineState(this);
   }
 
   loadState(saveData) {
-    if (!saveData || typeof saveData !== 'object') return false;
-
-    try {
-      // 1. Meta Heritage Restoration (persists across runs/clears)
-      if (saveData.meta && typeof saveData.meta === 'object') {
-        this.replayCount = Number(saveData.meta.replayCount) || 0;
-        this.completedParadigms = new Set(
-          Array.isArray(saveData.meta.completedParadigms)
-            ? saveData.meta.completedParadigms.filter(id => PARADIGMS.some(p => p.id === id))
-            : []
-        );
-        this.hasEverUnlockedSingularity = !!saveData.meta.hasEverUnlockedSingularity;
-        this.hasAchievedSingularity = !!saveData.meta.hasAchievedSingularity;
-      }
-
-      // 2. Active Run State Restoration
-      if (saveData.run && typeof saveData.run === 'object') {
-        const run = saveData.run;
-        this.insights = typeof run.insights === 'number' && !isNaN(run.insights) ? Math.max(0, run.insights) : 0;
-        this.totalInsightsEarned = typeof run.totalInsightsEarned === 'number' && !isNaN(run.totalInsightsEarned) ? Math.max(0, run.totalInsightsEarned) : 0;
-        this.currentEraId = typeof run.currentEraId === 'number' ? Math.max(1, Math.min(run.currentEraId, 7)) : 1;
-
-        // Restore generators
-        GENERATORS.forEach(g => {
-          const count = run.generators && typeof run.generators[g.id] === 'number' ? Math.max(0, Math.floor(run.generators[g.id])) : 0;
-          this.generators[g.id] = count;
-        });
-
-        // Restore milestones
-        this.unlockedMilestones = new Set(
-          Array.isArray(run.unlockedMilestones)
-            ? run.unlockedMilestones.filter(id => MILESTONES.some(m => m.id === id))
-            : []
-        );
-
-        this.bulkBuyMode = [1, 10, 'max'].includes(run.bulkBuyMode) ? run.bulkBuyMode : 1;
-        this.selectedMilestoneId = typeof run.selectedMilestoneId === 'string' && MILESTONES.some(m => m.id === run.selectedMilestoneId)
-          ? run.selectedMilestoneId
-          : "ms_talos";
-        this.activeParadigmId = typeof run.activeParadigmId === 'string' && PARADIGMS.some(p => p.id === run.activeParadigmId)
-          ? run.activeParadigmId
-          : null;
-        this.cyberneticBoostTimer = typeof run.cyberneticBoostTimer === 'number' ? Math.max(0, run.cyberneticBoostTimer) : 0;
-      }
-
-      // Record timestamp of loaded save state
-      this.lastSaveTimestamp = typeof saveData.timestamp === 'number' && !isNaN(saveData.timestamp)
-        ? saveData.timestamp
-        : null;
-
-      this.emit('stateChange');
-      return true;
-    } catch (e) {
-      console.warn('Could not deserialize save state:', e);
-      return false;
-    }
+    return deserializeEngineState(this, saveData);
   }
 
   saveToStorage() {
-    try {
-      if (typeof window === 'undefined' || !window.localStorage) return false;
-      const serialized = JSON.stringify(this.serializeState());
-      window.localStorage.setItem(SAVE_STORAGE_KEY, serialized);
-      return true;
-    } catch (e) {
-      console.warn('Auto-save to localStorage failed:', e);
-      return false;
-    }
+    return saveEngineToStorage(this);
   }
 
   loadFromStorage() {
-    try {
-      if (typeof window === 'undefined' || !window.localStorage) return false;
-      const raw = window.localStorage.getItem(SAVE_STORAGE_KEY);
-      if (!raw) return false;
-      const parsed = JSON.parse(raw);
-      return this.loadState(parsed);
-    } catch (e) {
-      console.warn('Auto-load from localStorage failed:', e);
-      return false;
-    }
+    return loadEngineFromStorage(this);
   }
 
   purgeAllData() {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.removeItem(SAVE_STORAGE_KEY);
-      }
-    } catch (e) {
-      console.warn('Purge localStorage failed:', e);
-    }
-
-    // Reset all runtime state to clean initial defaults
-    this.insights = 0;
-    this.totalInsightsEarned = 0;
-    this.currentEraId = 1;
-    this.unlockedMilestones.clear();
-    this.completedParadigms.clear();
-    this.activeParadigmId = null;
-    this.replayCount = 0;
-    this.hasAchievedSingularity = false;
-    this.hasEverUnlockedSingularity = false;
-    this.cyberneticBoostTimer = 0;
-    this.selectedMilestoneId = "ms_talos";
-    this.bulkBuyMode = 1;
-    this.lastSaveTimestamp = null;
-
-    GENERATORS.forEach(g => {
-      this.generators[g.id] = 0;
-    });
-
-    this.emit('stateChange');
-    return true;
+    return purgeEngineStorage(this);
   }
 
   // ==========================================
-  // OFFLINE PROGRESSION ("While You Were Away")
+  // OFFLINE PROGRESSION (DELEGATED)
   // ==========================================
 
   calculateOfflineProgress(savedTimestamp = this.lastSaveTimestamp) {
-    if (!savedTimestamp || typeof savedTimestamp !== 'number' || isNaN(savedTimestamp)) {
-      return { offlineGain: 0, elapsedSeconds: 0, rawElapsedSeconds: 0, isCapped: false, rate: 0 };
-    }
-
-    const now = Date.now();
-    const rawElapsedSeconds = Math.max(0, (now - savedTimestamp) / 1000);
-    
-    // Ignore micro gaps (< 5s, e.g. quick page refresh) to avoid noisy notifications
-    if (rawElapsedSeconds < 5) {
-      return { offlineGain: 0, elapsedSeconds: rawElapsedSeconds, rawElapsedSeconds, isCapped: false, rate: this.getTotalRate() };
-    }
-
-    const elapsedSeconds = Math.min(rawElapsedSeconds, MAX_OFFLINE_SECONDS);
-    const rate = this.getTotalRate();
-    const offlineGain = rate * elapsedSeconds;
-
-    return {
-      offlineGain: Math.max(0, offlineGain),
-      elapsedSeconds,
-      rawElapsedSeconds,
-      isCapped: rawElapsedSeconds > MAX_OFFLINE_SECONDS,
-      rate
-    };
+    return computeOfflineProgress(this, savedTimestamp);
   }
 
   // ==========================================
@@ -652,4 +391,3 @@ export class GameEngine {
     }
   }
 }
-

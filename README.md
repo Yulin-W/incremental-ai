@@ -1,4 +1,4 @@
-# 🧠 Incremental AI — The History of Artificial Intelligence
+# 🧠 Incremental AI — An Idle Game of AI History
 
 An interactive educational idle/incremental game guiding players through the **evolution of Artificial Intelligence**—from ancient mechanical automata and formal syllogisms to modern foundation models and autonomous reasoning agents.
 
